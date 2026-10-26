@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audiobooks</title><link rel="stylesheet" href="style.css"></head><body>
+<header><h1>🎧 Audiobooks</h1><nav><button data-v="search" class="on">Search</button><button data-v="library">Library</button></nav></header>
+<main>
+<section id="search"><form id="f"><input id="q" placeholder="Search books or audiobooks…" autocomplete="off"><button>Search</button></form>
+<h2>Books</h2><div id="books" class="grid"></div><h2>YouTube audiobooks</h2><div id="yt" class="list"></div></section>
+<section id="library" hidden><div id="lib" class="list"></div></section>
+</main>
+<div id="player" hidden><div class="pbar"><b id="ptitle"></b><select id="speed">
+<option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option><option>1.75</option><option>2</option></select><button id="close">✕</button></div><div id="yt-frame"></div></div>
+<dialog id="pick"><h3 id="pickt"></h3><div id="picks" class="list"></div><button onclick="pick.close()">Cancel</button></dialog>
+<script src="https://www.youtube.com/iframe_api"></script><script src="app.js"></script></body></html>
