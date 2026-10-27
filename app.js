@@ -2,6 +2,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>
 const B='<span class="badge"><img src="/logo.svg" alt="">Wisdom</span>';
 let lib=JSON.parse(localStorage.lib||'[]'),pos=JSON.parse(localStorage.pos||'{}'),player,cur;const reg={};let rid=0;
 const CATS=[
+["Myles Munroe", ["myles munroe full audiobook", "myles munroe sermon full", "myles munroe leadership lecture", "myles munroe kingdom sermon", "myles munroe purpose sermon", "myles munroe vision lecture", "myles munroe the power of audiobook", "myles munroe full message", "myles munroe understanding the purpose and power", "myles munroe lecture full"]],
 ["Economics Lectures", ["economics lecture full", "macroeconomics lecture full course", "microeconomics lecture full", "history of economic thought lecture", "yale financial markets lecture"]],
 ["Literature Lectures", ["literature lecture full", "shakespeare lecture full", "english literature course lecture", "modern poetry lecture yale", "novel lecture full"]],
 ["Mathematics Lectures", ["mathematics lecture full", "calculus lecture full course", "linear algebra lecture mit", "number theory lecture full", "history of mathematics lecture"]],
@@ -84,9 +85,9 @@ function parseYT(raw,channel){let t=String(raw||'').replace(/[\u{1F000}-\u{1FFFF
     const nm=/^[A-Z][\w.'’]*( [A-Z][\w.'’]*){1,3}$/;if(L&&R&&nm.test(R)&&!nm.test(L)){title=L;author=R}else if(L&&R&&nm.test(L)){author=L;title=R}else{title=m[1];author=''}}
   else title=t;
   title=cleanTitle(title)||cleanTitle(raw)||raw;let sub='';({title,sub}=splitSub(title));author=cleanTitle(author||'').replace(/\b(read|narrated)\b.*$/i,'').trim()||channel||'';return{title,sub,author}}
-const kindOf=t=>/\bted(x)?\b|ted-ed/i.test(t)?'Talk':/lecture|seminar|course|keynote|sermon|lesson/i.test(t)?'Lecture':/\btalks?\b|speech|podcast|interview/i.test(t)?'Talk':'Audiobook';
+const kindOf=t=>/myles\s+munroe/i.test(t)&&!/audio ?book/i.test(t)?'Lecture':/\bted(x)?\b|ted-ed/i.test(t)?'Talk':/lecture|seminar|course|keynote|sermon|lesson/i.test(t)?'Lecture':/\btalks?\b|speech|podcast|interview/i.test(t)?'Talk':'Audiobook';
 const KIND=it=>it.kind?`<span class="kind k-${it.kind.toLowerCase()}">${it.kind}</span>`:'';
-const vid=v=>{const p=parseYT(v.title,v.channel);{const ps=String(v.title).split('|').map(s=>s.trim());if(ps.length>=3&&/^TED/i.test(ps[ps.length-1])&&/^[A-Z][\w.'’-]*( [A-Z][\w.'’-]*){0,3}$/.test(ps[1]))p.author=ps[1]}return{kind:kindOf(v.title),videoId:v.id,title:p.title,sub:p.sub,author:p.author,ytTitle:v.title,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration}};
+const vid=v=>{const p=parseYT(v.title,v.channel);if(/myles\s+munroe/i.test(v.title+' '+v.channel)){const t2=v.title.replace(/(\bby\s+)?(dr\.?\s*)?myles\s+munroe('s)?/ig,' ').replace(/^\s*[-–—:|]+|[-–—:|]+\s*$/g,'').replace(/\|\s*\|/g,'|').trim();const q2=parseYT(t2||v.title,v.channel);p.title=q2.title;p.sub=q2.sub;p.author='Myles Munroe'}{const ps=String(v.title).split('|').map(s=>s.trim());if(ps.length>=3&&/^TED/i.test(ps[ps.length-1])&&/^[A-Z][\w.'’-]*( [A-Z][\w.'’-]*){0,3}$/.test(ps[1]))p.author=ps[1]}return{kind:kindOf(v.title),videoId:v.id,title:p.title,sub:p.sub,author:p.author,ytTitle:v.title,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration}};
 const OV=it=>`<div class="ov"><b>${esc(it.title)}</b><span>${esc(it.author||'')}</span></div>`;
 
 // Alphabetical helpers
@@ -105,9 +106,13 @@ const seen=new Set();let next=0;
 $('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i})">${esc(c[0])}</button>`).join('');
 async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=CATS[i];
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
-  const res=await Promise.allSettled(qs.map(q=>yt(q,true)));let items=[];
-  for(const r of res)if(r.status=='fulfilled')for(const v of r.value)if(!seen.has(v.id)){seen.add(v.id);items.push(vid(v))}
-  items.sort(byT);$(`#cat${i} .shelf`).innerHTML=items.map(x=>card(x)).join('')||'<p class="empty">Nothing here just now. Check back soon!</p>'}
+  const shelf=$(`#cat${i} .shelf`),toks=[];
+  const put=(p,q)=>{if(!p)return;if(p.next)toks.push({t:p.next,m:minFor(q),d:1});for(const v of p.items)if(!seen.has(v.id)){seen.add(v.id);const it=vid(v);insSorted(shelf,card(it),sk(it.title)+'|'+it.videoId)}};
+  const res=await Promise.allSettled(qs.map(q=>ytPage(q,true)));shelf.innerHTML='';res.forEach((r,k)=>r.status=='fulfilled'&&put(r.value,qs[k]));
+  if(!shelf.children.length)shelf.innerHTML='<p class="empty">Nothing here just now. Check back soon!</p>';
+  let busy=false;shelf.addEventListener('scroll',async()=>{if(busy||!toks.length||shelf.scrollLeft+shelf.clientWidth<shelf.scrollWidth-500)return;busy=true;
+    const batch=toks.splice(0,3);const rs=await Promise.allSettled(batch.map(b=>ytPage('',b.m,b.t)));
+    rs.forEach((r,k)=>{if(r.status=='fulfilled'){const p=r.value;if(p.next&&batch[k].d<8)toks.push({t:p.next,m:batch[k].m,d:batch[k].d+1});put({items:p.items},'')}});busy=false},{passive:true})}
 async function loadMore(n=4){const end=Math.min(next+n,CATS.length);const ps=[];for(;next<end;next++)ps.push(loadCat(next));if(next>=CATS.length)$('#more').hidden=true;await Promise.all(ps)}
 window.goCat=async i=>{document.querySelectorAll('.chips button').forEach((b,j)=>b.classList.toggle('on',i==j));show('home');if(!$('#cat'+i))await loadCat(i);$('#cat'+i).scrollIntoView({behavior:'smooth',block:'start'})};
 $('#more').onclick=()=>loadMore();
@@ -134,7 +139,7 @@ $('#f').onsubmit=async e=>{e.preventDefault();const q=$('#q').value.trim();if(!q
     $('#books').innerHTML=j.docs.sort((x,y)=>sk(x.title).localeCompare(sk(y.title))).map(b=>card({title:b.title,sub:b.subtitle||'',author:[(b.author_name||[]).join(', '),b.first_publish_year].filter(Boolean).join(' · '),thumb:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:'',bookAuthor:(b.author_name||[])[0]||''},{book:1})).join('')||'<p class="empty">No books matched that one. Try another title or author?</p>'
   }).catch(()=>$('#books').innerHTML='<p class="empty">We couldn\'t reach the book catalog. Please try again in a moment.</p>');
   sNext=null;sSeen=new Set();$('#ytmore').hidden=true;
-  Promise.allSettled([ytPage(q+' audiobook'),ytPage(q+' lecture'),ytPage(q+' TED talk')]).then(r=>{$('#yt').innerHTML='';const ok=r.filter(x=>x.status=='fulfilled').map(x=>x.value);if(!ok.length)throw Error(r[0].reason?.message||'failed');ok.slice(1).forEach(p=>addS({items:p.items,next:null}));addS(ok[0])}).catch(e=>$('#yt').innerHTML=`<p class="empty">YouTube search failed: ${esc(e.message)}</p>`)};
+  Promise.allSettled([ytPage(q+' audiobook'),ytPage(q+' lecture'),ytPage(q+' TED talk'),ytPage(q+' sermon'),ytPage(q)]).then(r=>{$('#yt').innerHTML='';const ok=r.filter(x=>x.status=='fulfilled').map(x=>x.value);if(!ok.length)throw Error(r[0].reason?.message||'failed');ok.slice(1).forEach(p=>addS({items:p.items,next:null}));addS(ok[0])}).catch(e=>$('#yt').innerHTML=`<p class="empty">YouTube search failed: ${esc(e.message)}</p>`)};
 let sNext=null,sSeen=new Set(),sBusy=false;
 function addS(p){$('#yt').querySelector('.empty')?.remove();p.items.filter(x=>!sSeen.has(x.id)&&sSeen.add(x.id)).map(vid).forEach(it=>insSorted($('#yt'),card(it),sk(it.title)+'|'+it.videoId));
   if(!$('#yt').children.length)$('#yt').innerHTML='<p class="empty">Nothing on YouTube for that yet. Try different words?</p>';sNext=p.next;$('#ytmore').hidden=!sNext;$('#ytcount').textContent=sSeen.size+' results'}
