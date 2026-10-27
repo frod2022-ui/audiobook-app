@@ -104,3 +104,8 @@ dialog{background:#fff;color:#111418;border-color:var(--line);box-shadow:0 10px 
 .az button{color:#111418;border-color:#c9ced6}.az button:hover{background:#111418;color:#fff;box-shadow:none}
 .lh{color:#111418;text-shadow:none;border-bottom:2px solid var(--line)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card:hover{transform:none!important}}
+
+/* expanded tile: no overlap */
+.shelf:not(.wrap) .card.playing{min-width:0;width:auto;grid-column:span 2;position:relative;z-index:auto;transform:none}
+@media(max-width:600px){.shelf:not(.wrap) .card.playing{grid-column:span 1}}
+.card.playing{transform:none!important;min-width:0}.tp,.tprow{min-width:0;max-width:100%}.tprow .tb{min-width:64px}.tprow select{flex:none}
