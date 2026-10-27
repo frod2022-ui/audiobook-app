@@ -44,18 +44,19 @@ async function yt(q,long){const k='yt:'+(long?'L:':'')+q;try{const c=JSON.parse(
 const secs=d=>d?d.split(':').reduce((a,x)=>a*60+ +x,0):0;
 function card(it,{book}={}){const id=++rid;reg[id]=it;const inLib=it.videoId&&lib.some(x=>x.videoId==it.videoId);
   return`<div class="card"><div class="cover" ${it.videoId?`onclick="playIt(${id})"`:`onclick="addBook(${id})"`}>${B}${it.duration?`<span class="dur">${esc(it.duration)}</span>`:''}${it.videoId?'':''}</div>
-  <div class="body"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.author)}</div><div class="acts">${book?`<button class="add" onclick="addBook(${id})">+ Add</button>`:inLib?`<button disabled>✓ Saved</button>`:`<button class="add" onclick="addIt(${id},this)">+ Add</button>`}${it.videoId?`<button onclick="playIt(${id})">▶ Play</button>`:''}</div></div></div>`}
+  <div class="body"><div class="t">${esc(it.title)}</div>${it.sub?`<div class="sub">${esc(it.sub)}</div>`:''}<div class="s">${esc(it.author)}</div><div class="acts">${book?`<button class="add" onclick="addBook(${id})">+ Add</button>`:inLib?`<button disabled>✓ Saved</button>`:`<button class="add" onclick="addIt(${id},this)">+ Add</button>`}${it.videoId?`<button onclick="playIt(${id})">▶ Play</button>`:''}</div></div></div>`}
 const NOISE=/\b(full[- ]length|full|complete|unabridged|abridged|audio ?books?|audio ?book|free|english|with text|subtitles?|high quality|hq|hd|narrated|read along|classic literature|collection|greatest)\b/gi;
 function cleanTitle(t){t=String(t||'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').replace(/\s*[\[(][^\])]*[\])]/g,m=>/audio|full|part|book|unabridged|chapter|\d/i.test(m)?'':m)
   .replace(/\b(part|pt|book|vol(ume)?|chapter|ch)\.?\s*\d+(\s*(of|\/)\s*\d+)?\b/gi,'').replace(NOISE,'').replace(/\s*[|#].*$/,'')
   .replace(/\s+([:,])/g,'$1').replace(/\s{2,}/g,' ').replace(/^[\s\-–—:|,.]+|[\s\-–—:|,.]+$/g,'').trim();return t}
+function splitSub(t){const m=String(t||'').match(/^(.{2,}?)\s*(?::|\s[-–—]\s)\s*(.{2,})$/);return m?{title:m[1].trim(),sub:cleanTitle(m[2])}:{title:t,sub:''}}
 function parseYT(raw,channel){let t=String(raw||'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').split(/\s[|#]\s?/)[0];let title,author,m;
   if((m=t.match(/^(.+?)\s+by\s+([^\-–—:|(\[]+)/i))){title=m[1];author=m[2]}
   else if((m=t.match(/^([^\-–—:]+?)\s+[-–—:]\s+(.+)$/))){const L=cleanTitle(m[1]),R=cleanTitle(m[2]);
     const nm=/^[A-Z][\w.'’]*( [A-Z][\w.'’]*){1,3}$/;if(L&&R&&nm.test(R)&&!nm.test(L)){title=L;author=R}else if(L&&R&&nm.test(L)){author=L;title=R}else{title=m[1];author=''}}
   else title=t;
-  title=cleanTitle(title)||cleanTitle(raw)||raw;author=cleanTitle(author||'').replace(/\b(read|narrated)\b.*$/i,'').trim()||channel||'';return{title,author}}
-const vid=v=>{const p=parseYT(v.title,v.channel);return{videoId:v.id,title:p.title,author:p.author,ytTitle:v.title,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration}};
+  title=cleanTitle(title)||cleanTitle(raw)||raw;let sub='';({title,sub}=splitSub(title));author=cleanTitle(author||'').replace(/\b(read|narrated)\b.*$/i,'').trim()||channel||'';return{title,sub,author}}
+const vid=v=>{const p=parseYT(v.title,v.channel);return{videoId:v.id,title:p.title,sub:p.sub,author:p.author,ytTitle:v.title,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration}};
 const OV=it=>`<div class="ov"><b>${esc(it.title)}</b><span>${esc(it.author||'')}</span></div>`;
 // Discover
 const seen=new Set();let next=0;
@@ -73,23 +74,23 @@ new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#home').hidden&&next<CA
 let books=[];
 $('#f').onsubmit=async e=>{e.preventDefault();const q=$('#q').value.trim();if(!q)return show('home');show('results');
   $('#books').innerHTML=$('#yt').innerHTML='<div class="skel"></div>'.repeat(4);
-  fetch('https://openlibrary.org/search.json?limit=12&fields=key,title,author_name,cover_i,first_publish_year&q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
-    $('#books').innerHTML=j.docs.map(b=>card({title:b.title,author:[(b.author_name||[]).join(', '),b.first_publish_year].filter(Boolean).join(' · '),thumb:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:'',bookAuthor:(b.author_name||[])[0]||''},{book:1})).join('')||'<p class="empty">No books found.</p>'
+  fetch('https://openlibrary.org/search.json?limit=12&fields=key,title,subtitle,author_name,cover_i,first_publish_year&q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
+    $('#books').innerHTML=j.docs.map(b=>card({title:b.title,sub:b.subtitle||'',author:[(b.author_name||[]).join(', '),b.first_publish_year].filter(Boolean).join(' · '),thumb:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:'',bookAuthor:(b.author_name||[])[0]||''},{book:1})).join('')||'<p class="empty">No books found.</p>'
   }).catch(()=>$('#books').innerHTML='<p class="empty">Open Library search failed.</p>');
   yt(q+' audiobook').then(v=>$('#yt').innerHTML=v.map(x=>card(vid(x))).join('')||'<p class="empty">No videos.</p>').catch(e=>$('#yt').innerHTML=`<p class="empty">YouTube search failed: ${esc(e.message)}</p>`)};
-function addItem(it){if(lib.some(x=>x.videoId==it.videoId))return toast('Already in library');lib.unshift({videoId:it.videoId,title:it.title,author:it.author,ytTitle:it.ytTitle||'',thumb:it.thumb,duration:it.duration});save();toast('Added to library')}
+function addItem(it){if(lib.some(x=>x.videoId==it.videoId))return toast('Already in library');lib.unshift({videoId:it.videoId,title:it.title,sub:it.sub||'',author:it.author,ytTitle:it.ytTitle||'',thumb:it.thumb,duration:it.duration});save();toast('Added to library')}
 window.addIt=(id,btn)=>{addItem(reg[id]);if(btn){btn.textContent='✓ Saved';btn.disabled=true;btn.classList.remove('add')}};
 window.addBook=async id=>{const b=reg[id];$('#pickt').textContent='Pick a recording for “'+b.title+'”';$('#picks').innerHTML='<div class="skel"></div>'.repeat(3);pick.showModal();
-  try{const v=await yt(`${b.title} ${b.bookAuthor} audiobook`);$('#picks').innerHTML=v.map(x=>{const it=vid(x);it.title=b.title;it.author=b.bookAuthor||it.author;if(b.thumb)it.thumb=b.thumb;it.ytTitle=x.title;const i=++rid;reg[i]=it;
-    return`<div class="card"><div class="cover" onclick="choose(${i})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.author)}</div><div class="s">${esc(x.channel)}</div><div class="acts"><button class="add" onclick="choose(${i})">Use</button><button onclick="cur=null;playIt(${i})">▶ Preview</button></div></div></div>`}).join('')||'<p class="empty">No matches.</p>'}
+  try{const v=await yt(`${b.title} ${b.bookAuthor} audiobook`);$('#picks').innerHTML=v.map(x=>{const it=vid(x);it.title=b.title;it.sub=b.sub||'';it.author=b.bookAuthor||it.author;if(b.thumb)it.thumb=b.thumb;it.ytTitle=x.title;const i=++rid;reg[i]=it;
+    return`<div class="card"><div class="cover" onclick="choose(${i})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(it.title)}</div>${it.sub?`<div class="sub">${esc(it.sub)}</div>`:''}<div class="s">${esc(it.author)}</div><div class="s">${esc(x.channel)}</div><div class="acts"><button class="add" onclick="choose(${i})">Use</button><button onclick="cur=null;playIt(${i})">▶ Preview</button></div></div></div>`}).join('')||'<p class="empty">No matches.</p>'}
   catch(e){$('#picks').innerHTML='<p class="empty">YouTube search failed: '+esc(e.message)+'</p>'}};
 window.choose=i=>{pick.close();addItem(reg[i])};
 // Library
 const fmt=s=>{s=Math.floor(s||0);return`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
-function renderLib(){lib.forEach(x=>{if(x.ytTitle===undefined&&!x._c){const p=parseYT(x.title,x.author);x.title=p.title;x.author=p.author;x._c=1}});$('#lib').innerHTML=lib.map((x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`}).join('')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
+function renderLib(){lib.forEach(x=>{if(x.ytTitle===undefined&&!x._c){const p=parseYT(x.title,x.author);x.title=p.title;x.author=p.author;x._c=1}if(x.sub===undefined){const s=splitSub(x.title);x.title=s.title;x.sub=s.sub}});$('#lib').innerHTML=lib.map((x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:''}<div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`}).join('')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
 window.rm=i=>{if(confirm('Remove “'+lib[i].title+'”?')){lib.splice(i,1);save()}};
 // Player
-window.playIt=id=>{persist();cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#pauthor').textContent=cur.author||'';const start=Math.floor(pos[cur.videoId]||0);
+window.playIt=id=>{persist();cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#psub').textContent=cur.sub||'';$('#psub').hidden=!cur.sub;$('#pauthor').textContent=cur.author||'';const start=Math.floor(pos[cur.videoId]||0);
   if(player?.loadVideoById)player.loadVideoById({videoId:cur.videoId,startSeconds:start});
   else player=new YT.Player('yt-frame',{videoId:cur.videoId,playerVars:{start,autoplay:1,playsinline:1},events:{onReady:e=>{e.target.setPlaybackRate(+$('#speed').value);e.target.playVideo()}}})};
 $('#speed').onchange=()=>player?.setPlaybackRate(+$('#speed').value);
