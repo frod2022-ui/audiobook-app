@@ -61,6 +61,18 @@ function parseYT(raw,channel){let t=String(raw||'').replace(/[\u{1F000}-\u{1FFFF
   title=cleanTitle(title)||cleanTitle(raw)||raw;let sub='';({title,sub}=splitSub(title));author=cleanTitle(author||'').replace(/\b(read|narrated)\b.*$/i,'').trim()||channel||'';return{title,sub,author}}
 const vid=v=>{const p=parseYT(v.title,v.channel);return{videoId:v.id,title:p.title,sub:p.sub,author:p.author,ytTitle:v.title,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration}};
 const OV=it=>`<div class="ov"><b>${esc(it.title)}</b><span>${esc(it.author||'')}</span></div>`;
+
+// Alphabetical helpers
+const sk=t=>String(t||'').toLowerCase().replace(/^[^a-z0-9]+/,'').replace(/^(the|an|a)\s+/,'').replace(/^[^a-z0-9]+/,'');
+const L=t=>{const c=sk(t)[0]||'#';return/[a-z]/.test(c)?c.toUpperCase():'#'};
+const byT=(x,y)=>sk(x.title).localeCompare(sk(y.title));
+const LETTERS='#ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild}
+function insSorted(box,html,k){const n=el(html);n.dataset.k=k;let lo=0,hi=box.children.length;while(lo<hi){const m=(lo+hi)>>1;if((box.children[m].dataset.k||'')<=k)lo=m+1;else hi=m}box.insertBefore(n,box.children[lo]||null)}
+function lsec(root,l){let s=root.querySelector(`[data-l="${l}"]`);if(s)return s.querySelector('.shelf');s=el(`<div class="lsec" data-l="${l}" id="${root.id}-${l=='#'?'num':l}"><h3 class="lh">${l}</h3><div class="shelf wrap"></div></div>`);
+  const after=[...root.children].find(c=>LETTERS.indexOf(c.dataset.l)>LETTERS.indexOf(l));root.insertBefore(s,after||null);return s.querySelector('.shelf')}
+function azBar(bar,root){bar.innerHTML=LETTERS.map(l=>`<button data-j="${l}">${l}</button>`).join('');bar.onclick=e=>{const l=e.target.dataset?.j;if(!l)return;const s=root.querySelector(`[data-l="${l}"]`);if(s)s.scrollIntoView({behavior:'smooth',block:'start'});else toast('No titles under '+l+' yet')}}
+function addSorted(root,it){insSorted(lsec(root,L(it.title)),card(it),sk(it.title)+'|'+it.videoId)}
 // Discover
 const seen=new Set();let next=0;
 $('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i})">${esc(c[0])}</button>`).join('');
@@ -68,7 +80,7 @@ async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
   const res=await Promise.allSettled(qs.map(q=>yt(q,true)));let items=[];
   for(const r of res)if(r.status=='fulfilled')for(const v of r.value)if(!seen.has(v.id)&&(!v.duration||secs(v.duration)>=3600)){seen.add(v.id);items.push(vid(v))}
-  $(`#cat${i} .shelf`).innerHTML=items.map(x=>card(x)).join('')||'<p class="empty">Nothing found right now.</p>'}
+  items.sort(byT);$(`#cat${i} .shelf`).innerHTML=items.map(x=>card(x)).join('')||'<p class="empty">Nothing found right now.</p>'}
 async function loadMore(n=4){const end=Math.min(next+n,CATS.length);const ps=[];for(;next<end;next++)ps.push(loadCat(next));if(next>=CATS.length)$('#more').hidden=true;await Promise.all(ps)}
 window.goCat=async i=>{document.querySelectorAll('.chips button').forEach((b,j)=>b.classList.toggle('on',i==j));show('home');if(!$('#cat'+i))await loadCat(i);$('#cat'+i).scrollIntoView({behavior:'smooth',block:'start'})};
 $('#more').onclick=()=>loadMore();
@@ -82,21 +94,21 @@ const AQ=buildQ(),aSeen=new Set();let aIdx=0,aCont=[],aBusy=false,aStarted=false
 async function aStep(){if(aBusy)return;aBusy=true;$('#aload').textContent='Loading more…';
   try{let n=0;for(let k=0;k<4;k++){let p;if(aCont.length&&Math.random()<.5){const c=aCont.shift();p=await ytPage('',true,c.t).catch(()=>null);if(p&&p.next&&c.d<6)aCont.push({t:p.next,d:c.d+1})}
       else if(aIdx<AQ.length){p=await ytPage(AQ[aIdx++],true).catch(()=>null);if(p&&p.next)aCont.push({t:p.next,d:1})}else if(aCont.length)continue;else break;
-      if(!p)continue;const h=p.items.filter(x=>(!x.duration||secs(x.duration)>=3300)&&!aSeen.has(x.id)&&aSeen.add(x.id)).map(x=>card(vid(x))).join('');n+=h.length;$('#all').insertAdjacentHTML('beforeend',h)}
+      if(!p)continue;p.items.filter(x=>(!x.duration||secs(x.duration)>=3300)&&!aSeen.has(x.id)&&aSeen.add(x.id)).map(vid).forEach(it=>{addSorted($('#all'),it);n++})}
     $('#acount').textContent=aSeen.size.toLocaleString()+' audiobooks loaded';}finally{aBusy=false;$('#aload').textContent=aIdx>=AQ.length&&!aCont.length?'That\'s everything for now':'Load more'}}
 new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#allv').hidden)aStep()},{rootMargin:'1200px'}).observe($('#aload'));
-$('#aload').onclick=aStep;
+$('#aload').onclick=aStep;azBar($('#aaz'),$('#all'));azBar($('#laz'),$('#lib'));
 // Search
 let books=[];
 $('#f').onsubmit=async e=>{e.preventDefault();const q=$('#q').value.trim();if(!q)return show('home');show('results');
   $('#books').innerHTML=$('#yt').innerHTML='<div class="skel"></div>'.repeat(4);
   fetch('https://openlibrary.org/search.json?limit=12&fields=key,title,subtitle,author_name,cover_i,first_publish_year&q='+encodeURIComponent(q)).then(r=>r.json()).then(j=>{
-    $('#books').innerHTML=j.docs.map(b=>card({title:b.title,sub:b.subtitle||'',author:[(b.author_name||[]).join(', '),b.first_publish_year].filter(Boolean).join(' · '),thumb:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:'',bookAuthor:(b.author_name||[])[0]||''},{book:1})).join('')||'<p class="empty">No books found.</p>'
+    $('#books').innerHTML=j.docs.sort((x,y)=>sk(x.title).localeCompare(sk(y.title))).map(b=>card({title:b.title,sub:b.subtitle||'',author:[(b.author_name||[]).join(', '),b.first_publish_year].filter(Boolean).join(' · '),thumb:b.cover_i?`https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg`:'',bookAuthor:(b.author_name||[])[0]||''},{book:1})).join('')||'<p class="empty">No books found.</p>'
   }).catch(()=>$('#books').innerHTML='<p class="empty">Open Library search failed.</p>');
   sNext=null;sSeen=new Set();$('#ytmore').hidden=true;
   ytPage(q+' audiobook').then(p=>{$('#yt').innerHTML='';addS(p)}).catch(e=>$('#yt').innerHTML=`<p class="empty">YouTube search failed: ${esc(e.message)}</p>`)};
 let sNext=null,sSeen=new Set(),sBusy=false;
-function addS(p){const h=p.items.filter(x=>!sSeen.has(x.id)&&sSeen.add(x.id)).map(x=>card(vid(x))).join('');$('#yt').insertAdjacentHTML('beforeend',h);
+function addS(p){$('#yt').querySelector('.empty')?.remove();p.items.filter(x=>!sSeen.has(x.id)&&sSeen.add(x.id)).map(vid).forEach(it=>insSorted($('#yt'),card(it),sk(it.title)+'|'+it.videoId));
   if(!$('#yt').children.length)$('#yt').innerHTML='<p class="empty">No videos.</p>';sNext=p.next;$('#ytmore').hidden=!sNext;$('#ytcount').textContent=sSeen.size+' results'}
 $('#ytmore').onclick=async()=>{if(!sNext||sBusy)return;sBusy=true;$('#ytmore').textContent='Loading…';try{addS(await ytPage('',false,sNext))}catch(e){toast('Could not load more')}sBusy=false;$('#ytmore').textContent='Load more results'};
 new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#results').hidden)$('#ytmore').click()},{rootMargin:'800px'}).observe($('#ytmore'));
@@ -109,7 +121,7 @@ window.addBook=async id=>{const b=reg[id];$('#pickt').textContent='Pick a record
 window.choose=i=>{pick.close();addItem(reg[i])};
 // Library
 const fmt=s=>{s=Math.floor(s||0);return`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
-function renderLib(){lib.forEach(x=>{if(x.ytTitle===undefined&&!x._c){const p=parseYT(x.title,x.author);x.title=p.title;x.author=p.author;x._c=1}if(x.sub===undefined){const s=splitSub(x.title);x.title=s.title;x.sub=s.sub}});$('#lib').innerHTML=lib.map((x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:''}<div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`}).join('')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
+function renderLib(){lib.forEach(x=>{if(x.ytTitle===undefined&&!x._c){const p=parseYT(x.title,x.author);x.title=p.title;x.author=p.author;x._c=1}if(x.sub===undefined){const s=splitSub(x.title);x.title=s.title;x.sub=s.sub}});const ord=lib.map((x,i)=>[x,i]).sort((p,q)=>byT(p[0],q[0]));let lastL='';const _cardL=(x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})">${B}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div>${x.sub?`<div class="sub">${esc(x.sub)}</div>`:''}<div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`};$('#lib').innerHTML=ord.map(([x,i])=>{const l=L(x.title);const hd=l!==lastL?`</div><h3 class="lh" id="lib-${l=='#'?'num':l}" data-l="${l}">${l}</h3><div class="shelf wrap">`:'';lastL=l;return hd+_cardL(x,i)}).join('').replace(/^<\/div>/,'')+(ord.length?'</div>':'')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
 window.rm=i=>{if(confirm('Remove “'+lib[i].title+'”?')){lib.splice(i,1);save()}};
 // Player
 window.playIt=id=>{const host=window.event?.target?.closest?.('.card');if(cur&&reg[id]&&cur.videoId===reg[id].videoId&&player?.getPlayerState){if(host&&!host.querySelector('.tp'))mountTile(host);return togglePlay()}persist();if(host)mountTile(host);cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#psub').textContent=cur.sub||'';$('#psub').hidden=!cur.sub;$('#pauthor').textContent=cur.author||'';const start=Math.floor(pos[cur.videoId]||0);

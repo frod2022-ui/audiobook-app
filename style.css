@@ -97,3 +97,9 @@ dialog{background:#0b0916;border-color:#8b5cff88;box-shadow:0 0 40px #8b5cff55}
 #toast{background:#120e22;color:#fff;box-shadow:0 0 16px #00e5ffaa;border:1px solid #00e5ff}
 .loadmore{border-color:#8b5cff;box-shadow:0 0 12px #8b5cff66}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card:hover{transform:none!important}}
+
+.az{position:sticky;top:72px;z-index:4;display:flex;gap:4px;overflow-x:auto;padding:8px 2px;margin-bottom:6px;background:#07060dd9;backdrop-filter:blur(8px);scrollbar-width:none}
+.az button{flex:none;min-width:30px;padding:5px 6px;font-size:12px;font-weight:700;border-radius:8px;color:#bff8ff;border-color:#00e5ff55}
+.az button:hover{background:#00e5ff22;box-shadow:0 0 10px #00e5ffaa}
+.lh{font:700 22px Fraunces,Georgia,serif;color:var(--gold);text-shadow:0 0 8px #ffc24b99;margin:18px 0 8px;scroll-margin-top:130px;border-bottom:1px solid #ffc24b33;padding-bottom:4px}
+.lsec{scroll-margin-top:130px}
