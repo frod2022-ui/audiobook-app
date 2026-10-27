@@ -161,8 +161,10 @@ function renderLib(){{const n=lib.length;lib=lib.filter(x=>x&&x.videoId&&!JUNK.t
 window.rm=i=>{if(confirm('Remove “'+lib[i].title+'”?')){lib.splice(i,1);save()}};
 // Player
 window.playIt=id=>{const host=window.event?.target?.closest?.('.card');if(cur&&reg[id]&&cur.videoId===reg[id].videoId&&player?.getPlayerState){if(host)mountTile(host);return togglePlay()}persist();if(host)mountTile(host);cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#psub').textContent=cur.sub||'';$('#psub').hidden=!cur.sub;$('#pauthor').textContent=cur.author||'';const start=Math.floor(pos[cur.videoId]||0);
-  if(player?.loadVideoById)player.loadVideoById({videoId:cur.videoId,startSeconds:start});
-  else player=new YT.Player('yt-frame',{videoId:cur.videoId,playerVars:{start,autoplay:1,playsinline:1},events:{onReady:e=>{e.target.setPlaybackRate(+$('#speed').value);e.target.playVideo()}}})};
+  if(player?.loadVideoById){player.loadVideoById({videoId:cur.videoId,startSeconds:start});armWatch()}
+  else if(!window.YT||!YT.Player){toast('Getting the player ready…');let n=0;const w=setInterval(()=>{if(window.YT&&YT.Player){clearInterval(w);window.playIt(id)}else if(++n>20){clearInterval(w);toast('The YouTube player could not load. Check your connection or ad blocker, then try again.')}},500);return}
+  else player=new YT.Player('yt-frame',{videoId:cur.videoId,host:'https://www.youtube.com',playerVars:{start,autoplay:1,playsinline:1,rel:0,origin:location.origin},events:{onReady:e=>{e.target.setPlaybackRate(+$('#speed').value);e.target.playVideo()},onError:onPlayErr,onStateChange:onPlayState}});
+  armWatch()};
 $('#speed').onchange=()=>player?.setPlaybackRate(+$('#speed').value);
 $('#toggle').onclick=()=>{const o=$('#player').classList.toggle('open');$('#toggle').textContent=o?'▴':'▾'};
 $('#close').onclick=()=>{document.querySelectorAll('.card.playing').forEach(c=>c.classList.remove('playing'));tileEl=null;persist();player?.stopVideo();$('#player').hidden=true;renderLib()};
@@ -184,3 +186,15 @@ $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gstop').oncli
 {const side=$('#side'),scrim=$('#scrim'),btn=$('#menu');const set=o=>{side.classList.toggle('open',o);scrim.hidden=!o;btn.setAttribute('aria-expanded',o)};
  btn.onclick=()=>set(!side.classList.contains('open'));scrim.onclick=()=>set(false);side.addEventListener('click',e=>{if(e.target.closest('button')&&matchMedia('(max-width:760px)').matches)set(false)});
  addEventListener('keydown',e=>{if(e.key==='Escape')set(false)})}
+
+// Playback robustness: embed-blocked skip, autoplay-blocked fallback
+const badIds=new Set(JSON.parse(localStorage.badIds||'[]'));let watchT=null;
+function setMsg(t){const m=$('#pmsg');m.textContent=t||'';m.hidden=!t}
+function armWatch(){setMsg('');clearTimeout(watchT);watchT=setTimeout(()=>{let st=-1;try{st=player.getPlayerState()}catch{}
+  if(st!==1&&st!==3){$('#player').classList.add('open');$('#toggle').textContent='▴';setMsg('Tap to play: press ▶ in the video below (your browser blocked autoplay).')}},5000)}
+function onPlayState(e){if(e.data===1||e.data===3){clearTimeout(watchT);if(e.data===1)setMsg('')}}
+function onPlayErr(e){clearTimeout(watchT);const code=e.data;if(cur){badIds.add(cur.videoId);try{localStorage.badIds=JSON.stringify([...badIds].slice(-500))}catch{}}
+  const cards=[...document.querySelectorAll('.card')].filter(c=>c.offsetParent!==null);const i=cards.indexOf(tileEl);
+  const nxt=cards.slice(i+1).concat(cards.slice(0,Math.max(0,i))).find(c=>{const b=c.querySelector('button[onclick^="playIt"]');if(!b)return false;const id=+b.getAttribute('onclick').match(/\d+/)[0];return reg[id]&&!badIds.has(reg[id].videoId)});
+  if(nxt){toast("That one can't be played here, trying the next one");setMsg("That one can't be played here (code "+code+"), trying the next one…");nxt.querySelector('button[onclick^="playIt"]').click()}
+  else setMsg("That one can't be played here (code "+code+"). Try another title.")}

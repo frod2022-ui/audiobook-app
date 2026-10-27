@@ -180,3 +180,10 @@ main{flex:1;min-width:0}
  #scrim{position:fixed;inset:0;z-index:29;background:#000a}
  .az{top:64px}
 }
+
+/* keep iframe real-size even when hidden (zero-size iframes can block playback) */
+.frame{height:auto!important;overflow:visible}
+#player:not(.open) .frame{position:fixed;left:-10000px;top:0;width:320px;height:180px;pointer-events:none}
+#player:not(.open) #yt-frame{width:320px;height:180px}
+#player.open .frame{position:static}#player.open #yt-frame{width:100%;height:min(50vw,280px)}
+.pmsg{padding:6px 12px;font-size:13px;color:#f5d76e;background:#1c1a14;border-top:1px solid #3a3222}
