@@ -153,7 +153,7 @@ setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();loadM
 let tileEl=null;
 function mountTile(card){if(tileEl&&tileEl!==card){tileEl.classList.remove('playing');tileEl.querySelector('.tp')?.remove()}tileEl=card;card.classList.add('playing');
   if(card.querySelector('.tp'))return;card.querySelector('.body').insertAdjacentHTML('beforeend',`<div class="tp" onclick="event.stopPropagation()">
-  <div class="tprow"><button class="tb add" data-a="pp" aria-label="Play">▶ Play</button><button class="tb" data-a="stop" aria-label="Stop">■ Stop</button><button class="tb" data-a="back" aria-label="Back 15 seconds">↺ 15s</button><select data-a="spd" aria-label="Speed">${[.75,1,1.25,1.5,1.75,2].map(s=>`<option ${s==+$('#speed').value?'selected':''}>${s}×</option>`).join('')}</select></div>
+  <div class="tprow"><button class="tb add" data-a="pp" aria-label="Play" title="Play/Pause">▶</button><button class="tb" data-a="stop" aria-label="Stop" title="Stop">■</button><button class="tb" data-a="back" aria-label="Back 15 seconds" title="Back 15s">↺15</button><select data-a="spd" aria-label="Speed">${[.75,1,1.25,1.5,1.75,2].map(s=>`<option ${s==+$('#speed').value?'selected':''}>${s}×</option>`).join('')}</select></div>
   <input type="range" class="seek" min="0" max="1000" value="0" aria-label="Seek"><div class="tptime"><span class="el">0:00:00</span><span class="tot">--:--</span></div></div>`);
   const tp=card.querySelector('.tp');
   tp.querySelector('[data-a=pp]').onclick=togglePlay;
@@ -165,6 +165,6 @@ function togglePlay(){if(!player?.getPlayerState)return;player.getPlayerState()=
 function skip(s){if(player?.getCurrentTime)player.seekTo(Math.max(0,player.getCurrentTime()+s),true)}
 setInterval(()=>{if(!player?.getCurrentTime||!cur)return;const t=player.getCurrentTime(),d=player.getDuration()||0,st=player.getPlayerState();
   $('#ptime').textContent=fmt(t)+(d?' / '+fmt(d):'');$('#gpp').textContent=st===1?'⏸':'▶';
-  if(tileEl){const tp=tileEl.querySelector('.tp');if(tp){tp.querySelector('.el').textContent=fmt(t);tp.querySelector('.tot').textContent=d?fmt(d):'--:--';tp.querySelector('[data-a=pp]').textContent=st===1?'⏸ Pause':'▶ Play';
+  if(tileEl){const tp=tileEl.querySelector('.tp');if(tp){tp.querySelector('.el').textContent=fmt(t);tp.querySelector('.tot').textContent=d?fmt(d):'--:--';tp.querySelector('[data-a=pp]').textContent=st===1?'⏸':'▶';
     const sk=tp.querySelector('.seek');if(!sk._drag&&d)sk.value=Math.round(t/d*1000);tp.querySelector('[data-a=spd]').value=$('#speed').value+'×'}}},500);
 $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gfwd').onclick=()=>skip(15);

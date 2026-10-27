@@ -112,3 +112,19 @@ dialog{background:#fff;color:#111418;border-color:var(--line);box-shadow:0 10px 
 
 .kind{font-size:11px;font-weight:700;letter-spacing:.3px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:#f4f5f7;color:#2b313a}.k-lecture{background:#e8eefc;color:#1f3a8a;border-color:#c5d3f5}.k-talk{background:#fde8e8;color:#8a1c1c;border-color:#f3c4c4}.k-audiobook{background:#fdf1e3;color:#7a3a00;border-color:#f0d3ae}
 .cover{gap:6px;flex-wrap:wrap}.cover .dur{margin-left:auto}
+
+/* compact players */
+.shelf .card.playing,.shelf.wrap .card.playing,.shelf:not(.wrap) .card.playing{grid-column:auto!important;min-width:0!important;width:auto}
+.tp{margin-top:6px;padding:6px 8px;gap:2px;border-radius:10px}
+.tprow{flex-wrap:nowrap;gap:4px}
+.tprow .tb{flex:none;min-width:0;width:30px;height:30px;padding:0;font-size:13px;line-height:1;border-radius:8px;font-weight:700}
+.tprow .tb[data-a=back]{width:38px;font-size:11px}
+.tprow select{margin-left:auto;padding:2px 4px;font-size:11px;height:26px;border-radius:6px}
+.seek{height:4px;margin:4px 0 0}.tptime{font-size:10px;line-height:1.2}
+#player{max-width:560px;border-radius:12px}
+.pbar{gap:6px;padding:6px 8px;min-height:48px;max-height:56px}
+.pmark{width:30px;height:30px;border-radius:7px}
+.pmeta b{font-size:13px}#psub,#pauthor{display:none}#ptime{font-size:11px}
+.pbar .ic,.pbar select{padding:3px 7px;font-size:12px;height:30px;border-radius:7px}
+#player.open .frame,#yt-frame{height:min(50vw,280px)}
+body{padding-bottom:80px}
