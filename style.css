@@ -42,3 +42,12 @@ dialog{max-width:820px;width:94%;background:var(--bg);color:var(--fg);border:1px
 .ov b{font:700 15px/1.15 Fraunces,Georgia,serif;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 3px #000a}
 .ov span{font-size:12px;color:#f3d6ac;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cover .dur{top:8px;right:8px;bottom:auto}.cover .play{inset:auto 8px 8px auto;opacity:0;transition:.2s}.card:hover .cover .play{opacity:1}
+
+/* text-only cards */
+.shelf{grid-auto-columns:clamp(220px,70vw,280px)}.shelf.wrap{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.card{background:linear-gradient(160deg,var(--card),var(--bg2));border-left:4px solid var(--acc)}
+.cover{aspect-ratio:auto;background:none;display:flex;align-items:center;justify-content:space-between;padding:10px 12px 0;min-height:0}
+.cover .badge{position:static;background:none;color:var(--acc);padding:0;opacity:1;backdrop-filter:none}
+.cover .dur{position:static;background:var(--bg2);color:var(--mut);border:1px solid var(--line)}
+.body{padding:6px 12px 12px}.body .t{font:700 16px/1.25 Fraunces,Georgia,serif;-webkit-line-clamp:3}
+.pmark{width:40px;height:40px;border-radius:10px;flex:none}
