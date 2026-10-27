@@ -1,11 +1,11 @@
 export async function onRequest({ request, env }) {
-  const u = new URL(request.url), q = u.searchParams.get('q'), long = u.searchParams.get('long') === '1', c = u.searchParams.get('c');
+  const u = new URL(request.url), q = u.searchParams.get('q'), long = u.searchParams.get('long') === '1', c = u.searchParams.get('c'), min = Math.max(1, +u.searchParams.get('min') || 60);
   const h = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'cache-control': 'public, max-age=21600' };
   const cache = globalThis.caches?.default, ck = new Request(u.toString());
   if (cache) { const hit = await cache.match(ck); if (hit) return hit; }
   if (!q && !c) return new Response(JSON.stringify({ error: 'missing q', items: [] }), { status: 400, headers: h });
-  try { let { items, next } = c ? await cont(c) : await searchPage(q, env.YOUTUBE_API_KEY, long);
-    if (long) items = items.filter(i => !i.duration || secs(i.duration) >= 3600);
+  try { let { items, next } = c ? await cont(c) : await searchPage(q, env.YOUTUBE_API_KEY, long && min >= 20);
+    if (long) items = items.filter(i => !i.duration || secs(i.duration) >= min * 60);
     const res = new Response(JSON.stringify({ items, next: next || null }), { headers: h });
     if (cache && items.length) await cache.put(ck, res.clone()); return res; }
   catch (e) { return new Response(JSON.stringify({ error: String(e.message || e), items: [] }), { status: 502, headers: h }); }
