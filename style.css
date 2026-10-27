@@ -127,7 +127,7 @@ button:hover,select:hover{background:#1c1a14;border-color:#d4af37;transform:tran
 .searchbar{margin:6px 0 14px}.searchbar input{padding:14px 22px;background:#141414;border-color:#4a3f26;box-shadow:var(--sh)}.searchbar input::placeholder{color:#a89a74}
 main{padding:22px 26px;max-width:1150px}
 .shelf{gap:18px;padding:6px 4px 18px}.shelf.wrap{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
-.card{background:#141414;border:1px solid var(--line);border-left:0;border-radius:var(--r);box-shadow:var(--sh);transition:transform .25s ease,box-shadow .25s ease}
+.card{background:#141414;border:1px solid var(--line);border-left:3px solid #d4af37;border-radius:var(--r);box-shadow:var(--sh);transition:transform .25s ease,box-shadow .25s ease}
 .shelf .card:nth-child(4n+1){background:#141414}.shelf .card:nth-child(4n+2){background:#141414}.shelf .card:nth-child(4n+3){background:#141414}.shelf .card:nth-child(4n+4){background:#141414}
 @media(hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px #000000a0}}
 .cover{padding:14px 16px 0}.body{padding:8px 16px 16px;gap:6px}
