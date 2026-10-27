@@ -69,10 +69,10 @@ dialog{max-width:820px;width:94%;background:var(--bg);color:var(--fg);border:1px
 
 
 
-.az{position:sticky;top:72px;z-index:4;display:flex;gap:4px;overflow-x:auto;padding:8px 2px;margin-bottom:6px;background:#07060dd9;backdrop-filter:blur(8px);scrollbar-width:none}
-.az button{flex:none;min-width:30px;padding:5px 6px;font-size:12px;font-weight:700;border-radius:8px;color:#bff8ff;border-color:#00e5ff55}
-.az button:hover{background:#00e5ff22;box-shadow:0 0 10px #00e5ffaa}
-.lh{font:700 22px Fraunces,Georgia,serif;color:var(--gold);text-shadow:0 0 8px #ffc24b99;margin:18px 0 8px;scroll-margin-top:130px;border-bottom:1px solid #ffc24b33;padding-bottom:4px}
+.az{position:sticky;top:72px;z-index:4;display:flex;gap:4px;overflow-x:auto;padding:8px 2px;margin-bottom:6px;scrollbar-width:none}
+.az button{flex:none;min-width:30px;padding:5px 6px;font-size:12px;font-weight:700;border-radius:8px;}
+
+.lh{font:700 22px Fraunces,Georgia,serif;margin:18px 0 8px;scroll-margin-top:130px;padding-bottom:4px}
 .lsec{scroll-margin-top:130px}
 
 /* ===== Light theme (white, high contrast) ===== */
