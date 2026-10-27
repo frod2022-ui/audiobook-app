@@ -2,6 +2,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>
 const B='<span class="badge"><img src="/logo.svg" alt="">Wisdom</span>';
 let lib=JSON.parse(localStorage.lib||'[]'),pos=JSON.parse(localStorage.pos||'{}'),player,cur;const reg={};let rid=0;
 const CATS=[
+['✨ Metaphysical',["metaphysical full audiobook", "law of attraction full audiobook", "neville goddard full audiobook", "napoleon hill full audiobook", "florence scovel shinn full audiobook", "emmet fox full audiobook", "ernest holmes science of mind audiobook", "wallace wattles full audiobook", "joseph murphy power of your subconscious mind audiobook", "edgar cayce full audiobook", "seth speaks jane roberts audiobook", "the kybalion full audiobook", "hermetic teachings full audiobook", "new thought full audiobook", "theosophy full audiobook", "eckhart tolle full audiobook", "manifestation full audiobook", "abraham hicks full audiobook", "mysticism full audiobook", "esoteric full audiobook", "rosicrucian full audiobook", "spiritual awakening full audiobook"]],
 ['Classics',['classic literature full audiobook','jane austen pride and prejudice full audiobook','charles dickens full audiobook']],
 ['Self-Help',['self help full audiobook','atomic habits audiobook full','personal development full audiobook']],
 ['Philosophy & Stoicism',['stoicism full audiobook','meditations marcus aurelius full audiobook','seneca letters full audiobook']],
