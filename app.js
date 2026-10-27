@@ -1,4 +1,5 @@
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const B='<span class="badge"><img src="/logo.svg" alt="">Wisdom</span>';
 let lib=JSON.parse(localStorage.lib||'[]'),pos=JSON.parse(localStorage.pos||'{}'),player,cur;const reg={};let rid=0;
 const CATS=[
 ['Classics',['classic literature full audiobook','jane austen pride and prejudice full audiobook','charles dickens full audiobook']],
@@ -41,7 +42,7 @@ async function yt(q,long){const k='yt:'+(long?'L:':'')+q;try{const c=JSON.parse(
   try{localStorage[k]=JSON.stringify({t:Date.now(),v:j.items})}catch{}return j.items}
 const secs=d=>d?d.split(':').reduce((a,x)=>a*60+ +x,0):0;
 function card(it,{book}={}){const id=++rid;reg[id]=it;const inLib=it.videoId&&lib.some(x=>x.videoId==it.videoId);
-  return`<div class="card"><div class="cover" ${it.videoId?`onclick="playIt(${id})"`:`onclick="addBook(${id})"`}><img loading="lazy" src="${esc(it.thumb)}" alt="">${it.duration?`<span class="dur">${esc(it.duration)}</span>`:''}${it.videoId?'<span class="play">▶</span>':''}</div>
+  return`<div class="card"><div class="cover" ${it.videoId?`onclick="playIt(${id})"`:`onclick="addBook(${id})"`}>${B}<img loading="lazy" src="${esc(it.thumb)}" alt="">${it.duration?`<span class="dur">${esc(it.duration)}</span>`:''}${it.videoId?'<span class="play">▶</span>':''}</div>
   <div class="body"><div class="t">${esc(it.title)}</div><div class="s">${esc(it.author)}</div><div class="acts">${book?`<button class="add" onclick="addBook(${id})">+ Add</button>`:inLib?`<button disabled>✓ Saved</button>`:`<button class="add" onclick="addIt(${id},this)">+ Add</button>`}</div></div></div>`}
 const vid=v=>({videoId:v.id,title:v.title,author:v.channel,thumb:`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,duration:v.duration});
 // Discover
@@ -68,12 +69,12 @@ function addItem(it){if(lib.some(x=>x.videoId==it.videoId))return toast('Already
 window.addIt=(id,btn)=>{addItem(reg[id]);if(btn){btn.textContent='✓ Saved';btn.disabled=true;btn.classList.remove('add')}};
 window.addBook=async id=>{const b=reg[id];$('#pickt').textContent='Pick a recording for “'+b.title+'”';$('#picks').innerHTML='<div class="skel"></div>'.repeat(3);pick.showModal();
   try{const v=await yt(`${b.title} ${b.bookAuthor} audiobook`);$('#picks').innerHTML=v.map(x=>{const it=vid(x);it.title=b.title;it.author=b.bookAuthor;if(b.thumb)it.thumb=b.thumb;it.ytTitle=x.title;const i=++rid;reg[i]=it;
-    return`<div class="card"><div class="cover" onclick="choose(${i})"><img loading="lazy" src="https://i.ytimg.com/vi/${x.id}/hqdefault.jpg">${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.channel)}</div><div class="acts"><button class="add" onclick="choose(${i})">Use</button></div></div></div>`}).join('')||'<p class="empty">No matches.</p>'}
+    return`<div class="card"><div class="cover" onclick="choose(${i})">${B}<img loading="lazy" src="https://i.ytimg.com/vi/${x.id}/hqdefault.jpg">${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.channel)}</div><div class="acts"><button class="add" onclick="choose(${i})">Use</button></div></div></div>`}).join('')||'<p class="empty">No matches.</p>'}
   catch(e){$('#picks').innerHTML='<p class="empty">YouTube search failed: '+esc(e.message)+'</p>'}};
 window.choose=i=>{pick.close();addItem(reg[i])};
 // Library
 const fmt=s=>{s=Math.floor(s||0);return`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
-function renderLib(){$('#lib').innerHTML=lib.map((x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})"><img loading="lazy" src="${esc(x.thumb)}" alt="">${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}<span class="play">▶</span></div><div class="body"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`}).join('')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
+function renderLib(){$('#lib').innerHTML=lib.map((x,i)=>{const id=++rid;reg[id]=x;return`<div class="card"><div class="cover" onclick="playIt(${id})">${B}<img loading="lazy" src="${esc(x.thumb)}" alt="">${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}<span class="play">▶</span></div><div class="body"><div class="t">${esc(x.title)}</div><div class="s">${esc(x.author)}</div><div class="s">${pos[x.videoId]?'Resume at '+fmt(pos[x.videoId]):'Not started'}</div><div class="acts"><button class="add" onclick="playIt(${id})">▶ Play</button><button onclick="rm(${i})" aria-label="Remove">🗑</button></div></div></div>`}).join('')||'<p class="empty">Your library is empty. Discover or search, then tap + Add.</p>'}
 window.rm=i=>{if(confirm('Remove “'+lib[i].title+'”?')){lib.splice(i,1);save()}};
 // Player
 window.playIt=id=>{persist();cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#pthumb').src=cur.thumb||'';const start=Math.floor(pos[cur.videoId]||0);
