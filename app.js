@@ -177,3 +177,8 @@ setInterval(()=>{if(!player?.getCurrentTime||!cur)return;const t=player.getCurre
   $('#ptime').textContent=fmt(t)+(d?' / '+fmt(d):'');$('#gpp').textContent=st===1?'⏸':'▶';
   const sk=$('#gseek');if(!sk._drag&&d)sk.value=Math.round(t/d*1000);},500);
 $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gstop').onclick=stopTile;{const sk=$('#gseek');sk.oninput=()=>{sk._drag=true};sk.onchange=()=>{const d=player?.getDuration?.()||0;if(d)player.seekTo(sk.value/1000*d,true);sk._drag=false}}
+
+// Phone drawer for side panel
+{const side=$('#side'),scrim=$('#scrim'),btn=$('#menu');const set=o=>{side.classList.toggle('open',o);scrim.hidden=!o;btn.setAttribute('aria-expanded',o)};
+ btn.onclick=()=>set(!side.classList.contains('open'));scrim.onclick=()=>set(false);side.addEventListener('click',e=>{if(e.target.closest('button')&&matchMedia('(max-width:760px)').matches)set(false)});
+ addEventListener('keydown',e=>{if(e.key==='Escape')set(false)})}

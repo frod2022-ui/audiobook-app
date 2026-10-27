@@ -166,3 +166,17 @@ main{flex:1;min-width:0}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card:hover,button:hover{transform:none!important}}
 
 .k-podcast{background:#241a2e;color:#e3c9ff;border-color:#5a3f78}
+
+/* phone: side panel as drawer, no category row on top */
+.menubtn{display:none}
+@media(max-width:760px){
+ .menubtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;font-size:20px;border-radius:12px;background:#141414;color:#f5d76e;border:1px solid #5a4c2a;margin-right:8px}
+ .top{justify-content:flex-start}
+ #side{position:fixed!important;top:0!important;left:0;bottom:0;z-index:30;width:min(82vw,300px)!important;height:100vh!important;display:block!important;overflow-y:auto!important;overflow-x:hidden!important;padding:18px 14px!important;background:#0f0f0f!important;border-right:1px solid #5a4c2a!important;border-bottom:0!important;transform:translateX(-105%);transition:transform .25s ease;box-shadow:8px 0 30px #000c}
+ #side.open{transform:none}
+ #side .sidehead{display:block!important}
+ #side .sidetabs{flex-direction:column!important;margin-bottom:16px!important}#side .tab{width:100%!important}
+ #side .chips{flex-direction:column!important}#side .chips button{white-space:normal!important}
+ #scrim{position:fixed;inset:0;z-index:29;background:#000a}
+ .az{top:64px}
+}
