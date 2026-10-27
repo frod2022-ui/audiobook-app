@@ -3,11 +3,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css"></head><body>
 <header class="top"><div class="brand"><img class="mark" src="/logo.svg" alt="Wisdom logo"><h1 class="wordmark">Wisdom<br>Audio</h1></div>
-<nav><a class="more" href="https://the-link.frodriguez-ezplay.workers.dev" target="_blank" rel="noopener">More Apps</a><button data-v="home" class="tab on">Discover</button><button data-v="library" class="tab">Library</button></nav></header>
+<nav><a class="more" href="https://the-link.frodriguez-ezplay.workers.dev" target="_blank" rel="noopener">More Apps</a><button data-v="home" class="tab on">Discover</button><button data-v="allv" class="tab">All</button><button data-v="library" class="tab">Library</button></nav></header>
 <main>
 <form id="f" class="searchbar"><input id="q" type="search" placeholder="Search any book, author or audiobook…" autocomplete="off"><button>Search</button></form>
 <section id="home"><div id="chips" class="chips"></div><div id="rows"></div><button id="more" class="loadmore">Load more categories</button></section>
-<section id="results" hidden><div class="rowhead"><h2>Books</h2><button class="link" id="clear">← Back to Discover</button></div><div id="books" class="shelf wrap"></div><h2>Listen on YouTube</h2><div id="yt" class="shelf wrap"></div></section>
+<section id="results" hidden><div class="rowhead"><h2>Books</h2><button class="link" id="clear">← Back to Discover</button></div><div id="books" class="shelf wrap"></div><div class="rowhead"><h2>Listen on YouTube</h2><span id="ytcount" class="s"></span></div><div id="yt" class="shelf wrap"></div><button id="ytmore" class="loadmore" hidden>Load more results</button></section>
+<section id="allv" hidden><div class="rowhead"><h2>All Audiobooks</h2><span id="acount" class="s">0 audiobooks loaded</span></div><div id="all" class="shelf wrap"></div><button id="aload" class="loadmore">Load more</button></section>
 <section id="library" hidden><h2>Your library</h2><div id="lib" class="shelf wrap"></div></section>
 </main>
 <div id="player" hidden><div class="pbar"><img class="pmark" src="/logo.svg" alt="Wisdom"><div class="pmeta"><b id="ptitle"></b><span id="psub" class="psub" hidden></span><span id="pauthor" class="s"></span><span id="ptime" class="s"></span></div>
