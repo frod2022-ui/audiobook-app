@@ -106,33 +106,35 @@ body{padding-bottom:80px}
 .pbar .ic{min-width:30px}
 .acts button[onclick^="playIt"]{flex:none;padding:4px 10px;min-height:32px;font-size:12px;font-weight:600;border-radius:999px}
 
-/* ===== Black & Gold theme ===== */
-:root{color-scheme:dark;--bg:#0a0a0a;--bg2:#1c1a14;--fg:#f5efe0;--mut:#cbbf9c;--card:#141414;--line:#3a3222;--acc:#d4af37;--acc2:#f5d76e;--gold:#d4af37;--sh:0 2px 10px #0009}
-body{background:#0a0a0a;color:var(--fg)}
-.top{background:#0a0a0af0;border-bottom:1px solid #d4af3755}
-.wordmark{color:#f5d76e}.mark{box-shadow:0 0 0 1px #d4af3788}
-h2,.lh{color:#f5d76e}.lh{border-bottom:1px solid #d4af3755}
-button,select,input{background:#141414;color:#f5efe0;border-color:#4a3f26}
-button:hover,select:hover{background:#1c1a14;border-color:#d4af37}
-:focus-visible{outline:2px solid #f5d76e;outline-offset:2px}
-.tab.on,.searchbar button,.add{background:#d4af37;color:#0a0a0a;border-color:#d4af37;font-weight:600}
-.tab.on:hover,.add:hover,.searchbar button:hover{background:#f5d76e;color:#0a0a0a}
-.searchbar input{background:#141414;border-color:#5a4c2a;box-shadow:none}.searchbar input::placeholder{color:#a89a74}.searchbar input:focus{border-color:#f5d76e;outline:2px solid #f5d76e}
-.chips button{color:#f5d76e;border-color:#5a4c2a;background:#141414}.chips button.on,.chips button:hover{background:#d4af37;color:#0a0a0a}
-.card{background:#141414;border:1px solid #3a3222;border-left:3px solid #d4af37;box-shadow:var(--sh)}
-@media(hover:hover){.card:hover{border-color:#d4af37;border-left-color:#f5d76e;transform:translateY(-2px);box-shadow:0 6px 18px #000c}}
-.body .t{color:#f5efe0}.sub{color:#e6dcc0;opacity:1}.s{color:#cbbf9c}
-.cover .badge{color:#f5d76e;background:none}
-.cover .dur{background:#1c1a14;color:#f5d76e;border-color:#5a4c2a}
-.card.playing{box-shadow:0 0 0 2px #f5d76e,var(--sh)!important;background:#1c1a14!important;border-left-color:#f5d76e}
+
+
+/* ===== Wood theme ===== */
+:root{color-scheme:dark;--bg:#24160d;--bg2:#3a2516;--fg:#f3e6c8;--mut:#dcc8a0;--card:#3b2616;--line:#5c3e25;--acc:#e0a84a;--acc2:#f0c674;--gold:#e0a84a;--sh:0 2px 10px #0008}
+body{background:repeating-linear-gradient(92deg,#ffffff06 0 2px,transparent 2px 9px),repeating-linear-gradient(88deg,#00000014 0 1px,transparent 1px 23px),linear-gradient(180deg,#2b1a10,#1f130b);background-attachment:fixed;color:var(--fg)}
+.top{background:repeating-linear-gradient(92deg,#ffffff06 0 2px,transparent 2px 9px),repeating-linear-gradient(88deg,#00000014 0 1px,transparent 1px 23px),linear-gradient(180deg,#3d2717,#2e1d11);border-bottom:2px solid #8a6034}
+.wordmark{color:#f0c674}.mark{box-shadow:0 0 0 1px #b8863b}
+h2,.lh{color:#f0c674}.lh{border-bottom:1px solid #8a603466}
+button,select,input{background:#2e1d11;color:#f3e6c8;border-color:#7a5530}
+button:hover,select:hover{background:#4a3019;border-color:#e0a84a}
+:focus-visible{outline:2px solid #f0c674;outline-offset:2px}
+.tab.on,.searchbar button,.add{background:linear-gradient(180deg,#e9b75a,#d39a3c);color:#1e120a;border-color:#b8863b;font-weight:600}
+.tab.on:hover,.add:hover,.searchbar button:hover{background:#f0c674;color:#1e120a}
+.searchbar input{background:#2e1d11;border-color:#7a5530;box-shadow:inset 0 1px 3px #0006}.searchbar input::placeholder{color:#bfa77c}.searchbar input:focus{border-color:#f0c674;outline:2px solid #f0c674}
+.chips button{color:#f0c674;border-color:#7a5530;background:#2e1d11}.chips button.on,.chips button:hover{background:#e0a84a;color:#1e120a}
+.card{background:repeating-linear-gradient(92deg,#ffffff06 0 2px,transparent 2px 9px),repeating-linear-gradient(88deg,#00000014 0 1px,transparent 1px 23px),linear-gradient(160deg,#452c19,#36230f);border:1px solid #5c3e25;border-left:3px solid #e0a84a;box-shadow:var(--sh)}
+@media(hover:hover){.card:hover{border-color:#b8863b;border-left-color:#f0c674;transform:translateY(-2px);box-shadow:0 6px 18px #000a}}
+.body .t{color:#f8edd3}.sub{color:#ead9b3;opacity:1}.s{color:#dcc8a0}
+.cover .badge{color:#f0c674;background:none}
+.cover .dur{background:#2a1a0e;color:#f0c674;border-color:#7a5530}
+.card.playing{box-shadow:0 0 0 2px #f0c674,var(--sh)!important;border-left-color:#f0c674}
 .kind{font-size:11px;font-weight:700;letter-spacing:.3px;padding:2px 8px;border-radius:999px;border:1px solid}
-.k-audiobook{background:#2a2312;color:#f5d76e;border-color:#6b5a2a}.k-lecture{background:#1a2230;color:#b9d3ff;border-color:#3b5378}.k-talk{background:#2e1a1a;color:#ffc2b3;border-color:#6e3a32}
-#player{background:#141414;border:1px solid #d4af37;box-shadow:0 8px 30px #000c}#player b{color:#f5efe0}#ptime{color:#cbbf9c}
-.gseek{accent-color:#d4af37}
-.skel{background:linear-gradient(90deg,#141414,#1f1c15,#141414);background-size:200%}
-dialog{background:#0f0f0f;color:#f5efe0;border-color:#d4af37}
-#toast{background:#d4af37;color:#0a0a0a}
-.loadmore{border-color:#d4af37;color:#f5d76e}
-.az{background:#0a0a0af0;border-bottom:1px solid #3a3222}.az button{color:#f5d76e;border-color:#5a4c2a;background:#141414}.az button:hover{background:#d4af37;color:#0a0a0a}
-.empty{color:#cbbf9c}.link{color:#f5d76e}
+.k-audiobook{background:#2a1a0e;color:#f0c674;border-color:#8a6034}.k-lecture{background:#1f2a24;color:#cfe8d6;border-color:#4d6b58}.k-talk{background:#3a1c14;color:#ffd0bd;border-color:#7a4030}
+#player{background:repeating-linear-gradient(92deg,#ffffff06 0 2px,transparent 2px 9px),repeating-linear-gradient(88deg,#00000014 0 1px,transparent 1px 23px),linear-gradient(180deg,#3d2717,#2b1a10);border:1px solid #e0a84a;box-shadow:0 8px 30px #000b}#player b{color:#f8edd3}#ptime{color:#dcc8a0}
+.gseek{accent-color:#e0a84a}
+.skel{background:linear-gradient(90deg,#36230f,#4a3019,#36230f);background-size:200%}
+dialog{background:#2b1a10;color:#f3e6c8;border-color:#e0a84a}
+#toast{background:#e0a84a;color:#1e120a}
+.loadmore{border-color:#e0a84a;color:#f0c674}
+.az{background:#2e1d11f2;border-bottom:1px solid #5c3e25}.az button{color:#f0c674;border-color:#7a5530;background:#2e1d11}.az button:hover{background:#e0a84a;color:#1e120a}
+.empty{color:#dcc8a0}.link{color:#f0c674}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card:hover{transform:none!important}}
