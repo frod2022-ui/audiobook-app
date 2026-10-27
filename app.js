@@ -34,6 +34,7 @@ const CATS=[
 ['Economics',['economics full audiobook','wealth of nations audiobook']],
 ['Mystic & Occult',['kybalion full audiobook','hermetic philosophy audiobook']],
 ];
+CATS.sort((x,y)=>{const k=s=>s.replace(/^[^A-Za-z0-9]+/,'').replace(/^the\s+/i,'').toLowerCase();return k(x[0]).localeCompare(k(y[0]))});
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),1800)};
 const save=()=>{localStorage.lib=JSON.stringify(lib);renderLib()};
 function show(v){if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv'])$('#'+s).hidden=s!=v;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v==(v=='results'?'home':v)));$('.searchbar').hidden=v=='library'}
@@ -91,11 +92,12 @@ function buildQ(){const q=[];AUTH.forEach(x=>q.push(x+' full audiobook'));GEN.fo
   LANG.forEach(x=>q.push('full audiobook '+x,'audiolibro completo '+x));CH.forEach(x=>q.push(x));'abcdefghijklmnopqrstuvwxyz'.split('').forEach(l=>q.push('full audiobook '+l,l+' audiobook unabridged'));
   for(let i=1;i<=30;i++)q.push('full audiobook part '+i);for(let i=q.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[q[i],q[j]]=[q[j],q[i]]}return q}
 const AQ=buildQ(),aSeen=new Set();let aIdx=0,aCont=[],aBusy=false,aStarted=false;
+function updCount(){const n=$('#all').querySelectorAll('.card').length;$('#acount').textContent=n.toLocaleString()+(n==1?' audiobook':' audiobooks')+' loaded'}
 async function aStep(){if(aBusy)return;aBusy=true;$('#aload').textContent='Loading more…';
   try{let n=0;for(let k=0;k<4;k++){let p;if(aCont.length&&Math.random()<.5){const c=aCont.shift();p=await ytPage('',true,c.t).catch(()=>null);if(p&&p.next&&c.d<6)aCont.push({t:p.next,d:c.d+1})}
       else if(aIdx<AQ.length){p=await ytPage(AQ[aIdx++],true).catch(()=>null);if(p&&p.next)aCont.push({t:p.next,d:1})}else if(aCont.length)continue;else break;
-      if(!p)continue;p.items.filter(x=>(!x.duration||secs(x.duration)>=3300)&&!aSeen.has(x.id)&&aSeen.add(x.id)).map(vid).forEach(it=>{addSorted($('#all'),it);n++})}
-    $('#acount').textContent=aSeen.size.toLocaleString()+' audiobooks loaded';}finally{aBusy=false;$('#aload').textContent=aIdx>=AQ.length&&!aCont.length?'That\'s everything for now':'Load more'}}
+      if(!p)continue;p.items.filter(x=>(!x.duration||secs(x.duration)>=3300)&&!aSeen.has(x.id)&&aSeen.add(x.id)).map(vid).forEach(it=>{try{addSorted($('#all'),it);n++}catch(e){}});updCount()}
+    }finally{updCount();aBusy=false;$('#aload').textContent=aIdx>=AQ.length&&!aCont.length?'That\'s everything for now':'Load more'}}
 new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#allv').hidden)aStep()},{rootMargin:'1200px'}).observe($('#aload'));
 $('#aload').onclick=aStep;azBar($('#aaz'),$('#all'));azBar($('#laz'),$('#lib'));
 // Search
