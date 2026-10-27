@@ -164,3 +164,5 @@ main{flex:1;min-width:0}
  #side .chips{flex-direction:row}#side .chips button{white-space:nowrap}
  .az{top:120px}main{padding:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card:hover,button:hover{transform:none!important}}
+
+.k-podcast{background:#241a2e;color:#e3c9ff;border-color:#5a3f78}
