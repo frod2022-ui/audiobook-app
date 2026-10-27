@@ -125,20 +125,18 @@ setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();loadM
 let tileEl=null;
 function mountTile(card){if(tileEl&&tileEl!==card){tileEl.classList.remove('playing');tileEl.querySelector('.tp')?.remove()}tileEl=card;card.classList.add('playing');
   if(card.querySelector('.tp'))return;card.querySelector('.body').insertAdjacentHTML('beforeend',`<div class="tp" onclick="event.stopPropagation()">
-  <div class="tprow"><button class="ic" data-a="back" aria-label="Back 15 seconds">↺15</button><button class="pp add" data-a="pp" aria-label="Play/Pause">⏸</button><button class="ic" data-a="fwd" aria-label="Forward 15 seconds">15↻</button>
-  <select data-a="spd" aria-label="Speed">${[.75,1,1.25,1.5,1.75,2].map(s=>`<option ${s==+$('#speed').value?'selected':''}>${s}</option>`).join('')}</select><button class="ic" data-a="vid" aria-label="Show video">🎬</button><button class="ic" data-a="x" aria-label="Collapse">✕</button></div>
+  <div class="tprow"><button class="tb add" data-a="pp" aria-label="Play">▶ Play</button><button class="tb" data-a="stop" aria-label="Stop">■ Stop</button><button class="tb" data-a="back" aria-label="Back 15 seconds">↺ 15s</button><select data-a="spd" aria-label="Speed">${[.75,1,1.25,1.5,1.75,2].map(s=>`<option ${s==+$('#speed').value?'selected':''}>${s}×</option>`).join('')}</select></div>
   <input type="range" class="seek" min="0" max="1000" value="0" aria-label="Seek"><div class="tptime"><span class="el">0:00:00</span><span class="tot">--:--</span></div></div>`);
   const tp=card.querySelector('.tp');
   tp.querySelector('[data-a=pp]').onclick=togglePlay;
-  tp.querySelector('[data-a=back]').onclick=()=>skip(-15);tp.querySelector('[data-a=fwd]').onclick=()=>skip(15);
-  tp.querySelector('[data-a=spd]').onchange=e=>{$('#speed').value=e.target.value;player?.setPlaybackRate(+e.target.value)};
-  tp.querySelector('[data-a=vid]').onclick=()=>$('#toggle').click();
-  tp.querySelector('[data-a=x]').onclick=()=>{card.classList.remove('playing');tp.remove();if(tileEl===card)tileEl=null};
+  tp.querySelector('[data-a=back]').onclick=()=>skip(-15);tp.querySelector('[data-a=stop]').onclick=stopTile;
+  tp.querySelector('[data-a=spd]').onchange=e=>{const v=parseFloat(e.target.value);$('#speed').value=v;player?.setPlaybackRate(v)};
   const sk=tp.querySelector('.seek');sk.oninput=()=>{sk._drag=true};sk.onchange=()=>{const d=player?.getDuration?.()||0;if(d)player.seekTo(sk.value/1000*d,true);sk._drag=false}}
+function stopTile(){persist();player?.pauseVideo?.();if(tileEl){tileEl.classList.remove('playing');tileEl.querySelector('.tp')?.remove();tileEl=null}renderLib()}
 function togglePlay(){if(!player?.getPlayerState)return;player.getPlayerState()===1?player.pauseVideo():player.playVideo()}
 function skip(s){if(player?.getCurrentTime)player.seekTo(Math.max(0,player.getCurrentTime()+s),true)}
 setInterval(()=>{if(!player?.getCurrentTime||!cur)return;const t=player.getCurrentTime(),d=player.getDuration()||0,st=player.getPlayerState();
   $('#ptime').textContent=fmt(t)+(d?' / '+fmt(d):'');$('#gpp').textContent=st===1?'⏸':'▶';
-  if(tileEl){const tp=tileEl.querySelector('.tp');if(tp){tp.querySelector('.el').textContent=fmt(t);tp.querySelector('.tot').textContent=d?fmt(d):'--:--';tp.querySelector('[data-a=pp]').textContent=st===1?'⏸':'▶';
-    const sk=tp.querySelector('.seek');if(!sk._drag&&d)sk.value=Math.round(t/d*1000);tp.querySelector('[data-a=spd]').value=$('#speed').value}}},500);
+  if(tileEl){const tp=tileEl.querySelector('.tp');if(tp){tp.querySelector('.el').textContent=fmt(t);tp.querySelector('.tot').textContent=d?fmt(d):'--:--';tp.querySelector('[data-a=pp]').textContent=st===1?'⏸ Pause':'▶ Play';
+    const sk=tp.querySelector('.seek');if(!sk._drag&&d)sk.value=Math.round(t/d*1000);tp.querySelector('[data-a=spd]').value=$('#speed').value+'×'}}},500);
 $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gfwd').onclick=()=>skip(15);
