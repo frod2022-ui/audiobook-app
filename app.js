@@ -65,8 +65,7 @@ const CATS=[
 CATS.sort((x,y)=>{const k=s=>s.replace(/^[^A-Za-z0-9]+/,'').replace(/^the\s+/i,'').toLowerCase();return k(x[0]).localeCompare(k(y[0]))});
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),1800)};
 const save=()=>{localStorage.lib=JSON.stringify(lib);renderLib()};
-function show(v){if(v=='home')v='allv';if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv'])$('#'+s).hidden=s!=v;$('#libbtn').classList.toggle('on',v=='library');$('.searchbar').hidden=v=='library'}
-$('#libbtn').onclick=()=>show($('#library').hidden?'library':'allv');$('#libback').onclick=()=>show('allv');
+function show(v){if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv'])$('#'+s).hidden=s!=v;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v==(v=='results'?'home':v)));$('.searchbar').hidden=v=='library'}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v));$('#clear').onclick=()=>show('home');
 const JUNK=/\b(trailer|teaser|review|reviews|reaction|summary|summarized|summaries|in \d+ minutes|explained|book promo|promo|unboxing|music video|official (music )?video|lyrics?|#shorts?|shorts|live ?stream(ing)? (starting|soon)|premiere|coming soon|highlights?|clips?|preview|sample|excerpt|playlist only)\b/i;
 const playable=x=>x&&x.id&&x.duration&&secs(x.duration)>=300&&!JUNK.test(x.title||'');
@@ -110,7 +109,7 @@ function azBar(bar,root){bar.innerHTML=LETTERS.map(l=>`<button data-j="${l}">${l
 function addSorted(root,it){insSorted(lsec(root,L(it.title)),card(it),sk(it.title)+'|'+it.videoId)}
 // Discover
 const seen=new Set();let next=0;
-if($('#chips'))$('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i})">${esc(c[0])}</button>`).join('');
+$('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i})">${esc(c[0])}</button>`).join('');
 async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=CATS[i];
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
   const shelf=$(`#cat${i} .shelf`),toks=[];
@@ -170,7 +169,7 @@ $('#speed').onchange=()=>player?.setPlaybackRate(+$('#speed').value);
 $('#toggle').onclick=()=>{const o=$('#player').classList.toggle('open');$('#toggle').textContent=o?'▴':'▾'};
 $('#close').onclick=()=>{document.querySelectorAll('.card.playing').forEach(c=>c.classList.remove('playing'));tileEl=null;persist();player?.stopVideo();$('#player').hidden=true;renderLib()};
 function persist(){if(cur&&player?.getCurrentTime){const t=player.getCurrentTime();if(t>0){pos[cur.videoId]=t;localStorage.pos=JSON.stringify(pos)}$('#ptime').textContent=fmt(t)+(player.getDuration?' / '+fmt(player.getDuration()):'')}}
-setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();show('allv');
+setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();loadMore(6);
 
 // Single bottom player; tiles only highlight
 let tileEl=null;
@@ -184,7 +183,7 @@ setInterval(()=>{if(!player?.getCurrentTime||!cur)return;const t=player.getCurre
 $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gstop').onclick=stopTile;{const sk=$('#gseek');sk.oninput=()=>{sk._drag=true};sk.onchange=()=>{const d=player?.getDuration?.()||0;if(d)player.seekTo(sk.value/1000*d,true);sk._drag=false}}
 
 // Phone drawer for side panel
-if($('#side')){const side=$('#side'),scrim=$('#scrim'),btn=$('#menu');const set=o=>{side.classList.toggle('open',o);scrim.hidden=!o;btn.setAttribute('aria-expanded',o)};
+{const side=$('#side'),scrim=$('#scrim'),btn=$('#menu');const set=o=>{side.classList.toggle('open',o);scrim.hidden=!o;btn.setAttribute('aria-expanded',o)};
  btn.onclick=()=>set(!side.classList.contains('open'));scrim.onclick=()=>set(false);side.addEventListener('click',e=>{if(e.target.closest('button')&&matchMedia('(max-width:760px)').matches)set(false)});
  addEventListener('keydown',e=>{if(e.key==='Escape')set(false)})}
 
