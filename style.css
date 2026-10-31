@@ -206,3 +206,9 @@ main{max-width:1200px;margin:0 auto}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .az{top:72px!important}
 @media(max-width:760px){.topctl{gap:8px}.topctl .tabs{width:100%}.topctl .tab{flex:1}.catsel{margin-left:0;width:100%}.catsel select{width:100%}.az{top:64px!important}}
+
+/* audio only: player iframe is never shown */
+#player .frame,#player.open .frame{position:fixed!important;left:-10000px!important;top:0!important;width:320px!important;height:180px!important;pointer-events:none;opacity:0;visibility:visible}
+#player #yt-frame,#player.open #yt-frame{width:320px!important;height:180px!important}
+.pmsg{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pmsg[hidden]{display:none}
+.tapplay{height:44px;padding:0 22px;border-radius:999px;background:#d4af37;color:#0a0a0a;border:1px solid #f5d76e;font-size:16px;font-weight:800}

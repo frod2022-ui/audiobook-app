@@ -142,10 +142,10 @@ let books=[];
 $('#f').onsubmit=async e=>{e.preventDefault();const q=$('#q').value.trim();if(!q)return show('home');show('results');
   $('#yt').innerHTML='<div class="skel"></div>'.repeat(4);
   sNext=null;sSeen=new Set();$('#ytmore').hidden=true;
-  Promise.allSettled([ytPage(q+' audiobook'),ytPage(q+' lecture'),ytPage(q+' TED talk'),ytPage(q+' sermon'),ytPage(q+' podcast'),ytPage(q)]).then(r=>{$('#yt').innerHTML='';const ok=r.filter(x=>x.status=='fulfilled').map(x=>x.value);if(!ok.length)throw Error(r[0].reason?.message||'failed');ok.slice(1).forEach(p=>addS({items:p.items,next:null}));addS(ok[0])}).catch(e=>$('#yt').innerHTML=`<p class="empty">YouTube search failed: ${esc(e.message)}</p>`)};
+  Promise.allSettled([ytPage(q+' audiobook'),ytPage(q+' lecture'),ytPage(q+' TED talk'),ytPage(q+' sermon'),ytPage(q+' podcast'),ytPage(q)]).then(r=>{$('#yt').innerHTML='';const ok=r.filter(x=>x.status=='fulfilled').map(x=>x.value);if(!ok.length)throw Error(r[0].reason?.message||'failed');ok.slice(1).forEach(p=>addS({items:p.items,next:null}));addS(ok[0])}).catch(e=>$('#yt').innerHTML=`<p class="empty">Search isn't working right now: ${esc(e.message)}</p>`)};
 let sNext=null,sSeen=new Set(),sBusy=false;
 function addS(p){$('#yt').querySelector('.empty')?.remove();p.items.filter(x=>!sSeen.has(x.id)&&sSeen.add(x.id)).map(vid).forEach(it=>insSorted($('#yt'),card(it),sk(it.title)+'|'+it.videoId));
-  if(!$('#yt').children.length)$('#yt').innerHTML='<p class="empty">Nothing on YouTube for that yet. Try different words?</p>';sNext=p.next;$('#ytmore').hidden=!sNext;$('#ytcount').textContent=sSeen.size+' results'}
+  if(!$('#yt').children.length)$('#yt').innerHTML='<p class="empty">Nothing to listen to for that yet. Try different words?</p>';sNext=p.next;$('#ytmore').hidden=!sNext;$('#ytcount').textContent=sSeen.size+' results'}
 $('#ytmore').onclick=async()=>{if(!sNext||sBusy)return;sBusy=true;$('#ytmore').textContent='Loading…';try{addS(await ytPage('',false,sNext))}catch(e){toast('Could not load more')}sBusy=false;$('#ytmore').textContent='Show me more'};
 new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#results').hidden)$('#ytmore').click()},{rootMargin:'800px'}).observe($('#ytmore'));
 function addItem(it){if(lib.some(x=>x.videoId==it.videoId))return toast('Already on your shelf');lib.unshift({kind:it.kind||'',videoId:it.videoId,title:it.title,sub:it.sub||'',author:it.author,ytTitle:it.ytTitle||'',thumb:it.thumb,duration:it.duration});save();toast('Added to your shelf ✨')}
@@ -153,7 +153,7 @@ window.addIt=(id,btn)=>{addItem(reg[id]);if(btn){btn.textContent='✓ Saved';btn
 window.addBook=async id=>{const b=reg[id];$('#pickt').textContent='Pick a recording for “'+b.title+'”';$('#picks').innerHTML='<div class="skel"></div>'.repeat(3);pick.showModal();
   try{const v=await yt(`${b.title} ${b.bookAuthor} audiobook`);$('#picks').innerHTML=v.map(x=>{const it=vid(x);it.title=b.title;it.sub=b.sub||'';it.author=b.bookAuthor||it.author;if(b.thumb)it.thumb=b.thumb;it.ytTitle=x.title;const i=++rid;reg[i]=it;
     return`<div class="card"><div class="cover" onclick="choose(${i})">${B}${KIND(it)}${x.duration?`<span class="dur">${esc(x.duration)}</span>`:''}</div><div class="body"><div class="t">${esc(it.title)}</div>${it.sub?`<div class="sub">${esc(it.sub)}</div>`:''}<div class="s">${esc(it.author)}</div><div class="s">${esc(x.channel)}</div><div class="acts"><button class="add" onclick="choose(${i})">Use</button><button onclick="cur=null;playIt(${i})">▶ Preview</button></div></div></div>`}).join('')||'<p class="empty">No recordings found yet. Try another book?</p>'}
-  catch(e){$('#picks').innerHTML='<p class="empty">YouTube search failed: '+esc(e.message)+'</p>'}};
+  catch(e){$('#picks').innerHTML='<p class="empty">Search isn\'t working right now: '+esc(e.message)+'</p>'}};
 window.choose=i=>{pick.close();addItem(reg[i])};
 // Library
 const fmt=s=>{s=Math.floor(s||0);return`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
@@ -162,11 +162,11 @@ window.rm=i=>{if(confirm('Remove “'+lib[i].title+'”?')){lib.splice(i,1);save
 // Player
 window.playIt=id=>{const host=window.event?.target?.closest?.('.card');if(cur&&reg[id]&&cur.videoId===reg[id].videoId&&player?.getPlayerState){if(host)mountTile(host);return togglePlay()}persist();if(host)mountTile(host);cur=reg[id];$('#player').hidden=false;$('#ptitle').textContent=cur.title;$('#psub').textContent=cur.sub||'';$('#psub').hidden=!cur.sub;$('#pauthor').textContent=cur.author||'';const start=Math.floor(pos[cur.videoId]||0);
   if(player?.loadVideoById){player.loadVideoById({videoId:cur.videoId,startSeconds:start});armWatch()}
-  else if(!window.YT||!YT.Player){toast('Getting the player ready…');let n=0;const w=setInterval(()=>{if(window.YT&&YT.Player){clearInterval(w);window.playIt(id)}else if(++n>20){clearInterval(w);toast('The YouTube player could not load. Check your connection or ad blocker, then try again.')}},500);return}
+  else if(!window.YT||!YT.Player){toast('Getting the player ready…');let n=0;const w=setInterval(()=>{if(window.YT&&YT.Player){clearInterval(w);window.playIt(id)}else if(++n>20){clearInterval(w);toast('The audio player could not load. Check your connection or ad blocker, then try again.')}},500);return}
   else player=new YT.Player('yt-frame',{videoId:cur.videoId,host:'https://www.youtube.com',playerVars:{start,autoplay:1,playsinline:1,rel:0,origin:location.origin},events:{onReady:e=>{e.target.setPlaybackRate(+$('#speed').value);e.target.playVideo()},onError:onPlayErr,onStateChange:onPlayState}});
   armWatch()};
 $('#speed').onchange=()=>player?.setPlaybackRate(+$('#speed').value);
-$('#toggle').onclick=()=>{const o=$('#player').classList.toggle('open');$('#toggle').textContent=o?'▴':'▾'};
+
 $('#close').onclick=()=>{document.querySelectorAll('.card.playing').forEach(c=>c.classList.remove('playing'));tileEl=null;persist();player?.stopVideo();$('#player').hidden=true;renderLib()};
 function persist(){if(cur&&player?.getCurrentTime){const t=player.getCurrentTime();if(t>0){pos[cur.videoId]=t;localStorage.pos=JSON.stringify(pos)}$('#ptime').textContent=fmt(t)+(player.getDuration?' / '+fmt(player.getDuration()):'')}}
 setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();loadMore(6);
@@ -187,7 +187,7 @@ $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gstop').oncli
 const badIds=new Set(JSON.parse(localStorage.badIds||'[]'));let watchT=null;
 function setMsg(t){const m=$('#pmsg');m.textContent=t||'';m.hidden=!t}
 function armWatch(){setMsg('');clearTimeout(watchT);watchT=setTimeout(()=>{let st=-1;try{st=player.getPlayerState()}catch{}
-  if(st!==1&&st!==3){$('#player').classList.add('open');$('#toggle').textContent='▴';setMsg('Tap to play: press ▶ in the video below (your browser blocked autoplay).')}},5000)}
+  if(st!==1&&st!==3){const m=$('#pmsg');m.innerHTML='<button id="tapplay" class="tapplay">▶ Tap to play</button><span>Your browser paused autoplay. Tap once to start listening.</span>';m.hidden=false;$('#tapplay').onclick=()=>{try{player.playVideo()}catch{}}}},5000)}
 function onPlayState(e){if(e.data===1||e.data===3){clearTimeout(watchT);if(e.data===1)setMsg('')}}
 function onPlayErr(e){clearTimeout(watchT);const code=e.data;if(cur){badIds.add(cur.videoId);try{localStorage.badIds=JSON.stringify([...badIds].slice(-500))}catch{}}
   const cards=[...document.querySelectorAll('.card')].filter(c=>c.offsetParent!==null);const i=cards.indexOf(tileEl);
