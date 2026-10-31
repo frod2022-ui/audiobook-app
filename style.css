@@ -189,3 +189,8 @@ main{flex:1;min-width:0}
 .pmsg{padding:6px 12px;font-size:13px;color:#f5d76e;background:#1c1a14;border-top:1px solid #3a3222}
 
 .toptabs{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.top .donate-wrap{margin-left:auto;display:flex;flex-direction:column;align-items:center;gap:2px;flex:none}
+.donate-cap{font-size:10.5px;line-height:1;color:#a8a8a8;font-weight:600;white-space:nowrap}
+#donateBtn2{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 18px;border-radius:999px;background:#ffdd00;color:#111;border:1px solid #c9ad00;box-shadow:0 1px 4px rgba(0,0,0,.15);font-weight:700;font-size:16px;text-decoration:none;white-space:nowrap}
+#donateBtn2 .coffee-ico{font-size:17px;line-height:1}
+@media (max-width:430px){#donateBtn2{height:40px;padding:0 12px;font-size:13px}}
