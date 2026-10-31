@@ -114,7 +114,7 @@ if($('#chips'))$('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i
 async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=CATS[i];
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
   const shelf=$(`#cat${i} .shelf`),toks=[];
-  const put=(p,q)=>{if(!p)return;if(p.next)toks.push({t:p.next,m:minFor(q),d:1});for(const v of p.items)if(!seen.has(v.id)){seen.add(v.id);const it=vid(v);insSorted(shelf,card(it),sk(it.title)+'|'+it.videoId)}};
+  const put=(p,q)=>{if(!p)return;if(p.next)toks.push({t:p.next,m:minFor(q),d:1});for(const v of p.items)if(!seen.has(v.id)){seen.add(v.id);const it=vid(v);if(name=="Popular Podcasts")it.kind="Podcast";insSorted(shelf,card(it),sk(it.title)+'|'+it.videoId)}};
   const res=await Promise.allSettled(qs.map(q=>ytPage(q,true)));shelf.innerHTML='';res.forEach((r,k)=>r.status=='fulfilled'&&put(r.value,qs[k]));
   if(!shelf.children.length)shelf.innerHTML='<p class="empty">Nothing here just now. Check back soon!</p>';
   let busy=false;shelf.addEventListener('scroll',async()=>{if(busy||!toks.length||shelf.scrollLeft+shelf.clientWidth<shelf.scrollWidth-500)return;busy=true;
