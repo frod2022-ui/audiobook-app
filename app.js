@@ -109,7 +109,7 @@ function azBar(bar,root){bar.innerHTML=LETTERS.map(l=>`<button data-j="${l}">${l
 function addSorted(root,it){insSorted(lsec(root,L(it.title)),card(it),sk(it.title)+'|'+it.videoId)}
 // Discover
 const seen=new Set();let next=0;
-$('#chips').innerHTML=CATS.map((c,i)=>`<button onclick="goCat(${i})">${esc(c[0])}</button>`).join('');
+$('#catsel').insertAdjacentHTML('beforeend',CATS.map((c,i)=>`<option value="${i}">${esc(c[0])}</option>`).join(''));$('#catsel').onchange=e=>{const v=e.target.value;if(v!=='')goCat(+v)};
 async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=CATS[i];
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
   const shelf=$(`#cat${i} .shelf`),toks=[];
@@ -182,10 +182,6 @@ setInterval(()=>{if(!player?.getCurrentTime||!cur)return;const t=player.getCurre
   const sk=$('#gseek');if(!sk._drag&&d)sk.value=Math.round(t/d*1000);},500);
 $('#gpp').onclick=togglePlay;$('#gback').onclick=()=>skip(-15);$('#gstop').onclick=stopTile;{const sk=$('#gseek');sk.oninput=()=>{sk._drag=true};sk.onchange=()=>{const d=player?.getDuration?.()||0;if(d)player.seekTo(sk.value/1000*d,true);sk._drag=false}}
 
-// Phone drawer for side panel
-{const side=$('#side'),scrim=$('#scrim'),btn=$('#menu');const set=o=>{side.classList.toggle('open',o);scrim.hidden=!o;btn.setAttribute('aria-expanded',o)};
- btn.onclick=()=>set(!side.classList.contains('open'));scrim.onclick=()=>set(false);side.addEventListener('click',e=>{if(e.target.closest('button')&&matchMedia('(max-width:760px)').matches)set(false)});
- addEventListener('keydown',e=>{if(e.key==='Escape')set(false)})}
 
 // Playback robustness: embed-blocked skip, autoplay-blocked fallback
 const badIds=new Set(JSON.parse(localStorage.badIds||'[]'));let watchT=null;

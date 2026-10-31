@@ -2,10 +2,10 @@
 <meta name="theme-color" content="#0a0a0a"><meta name="color-scheme" content="dark"><title>Wisdom Audio</title><meta name="description" content="Wisdom Audio: discover and listen to full-length audiobooks."><meta property="og:title" content="Wisdom Audio"><meta property="og:description" content="Discover and listen to full-length audiobooks."><meta name="apple-mobile-web-app-title" content="Wisdom Audio"><meta name="application-name" content="Wisdom Audio"><link rel="apple-touch-icon" href="/logo.svg"><link rel="icon" type="image/svg+xml" href="/logo.svg">
 
 <link rel="stylesheet" href="style.css"></head><body>
-<header class="top"><button id="menu" class="menubtn" aria-label="Open menu" aria-controls="side" aria-expanded="false">☰</button><div class="brand"><img class="mark" src="/logo.svg" alt="Wisdom logo"><h1 class="wordmark">Wisdom<br>Audio</h1></div>
+<header class="top"><div class="brand"><img class="mark" src="/logo.svg" alt="Wisdom logo"><h1 class="wordmark">Wisdom<br>Audio</h1></div>
 </header>
-<div class="layout"><div id="scrim" hidden></div><aside id="side" aria-label="Browse"><div class="sidehead">Browse</div><nav class="sidetabs"><button data-v="home" class="tab on">Discover</button><button data-v="allv" class="tab">All</button><button data-v="library" class="tab">Library</button></nav><div class="sidehead">Categories</div><div id="chips" class="chips"></div></aside>
-<main>
+<div class="layout">
+<main><div class="topctl"><nav class="tabs" aria-label="Sections"><button data-v="home" class="tab on">Discover</button><button data-v="allv" class="tab">All</button><button data-v="library" class="tab">Library</button></nav><label class="catsel"><span class="sr">Categories</span><select id="catsel" aria-label="Categories"><option value="">Categories…</option></select></label></div>
 <form id="f" class="searchbar"><input id="q" type="search" placeholder="Search audiobooks, lectures, talks or podcasts…" autocomplete="off"><button>Search</button></form>
 <section id="home"><div id="rows"></div><button id="more" class="loadmore">Show me more categories</button></section>
 <section id="results" hidden><div class="rowhead"><h2>Listen now</h2><button class="link" id="clear">← Back to Discover</button></div><div class="rowhead"><span id="ytcount" class="s"></span></div><div id="yt" class="shelf wrap"></div><button id="ytmore" class="loadmore" hidden>Show me more</button></section>
