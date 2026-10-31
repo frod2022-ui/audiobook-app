@@ -65,8 +65,8 @@ const CATS=[
 CATS.sort((x,y)=>{const k=s=>s.replace(/^[^A-Za-z0-9]+/,'').replace(/^the\s+/i,'').toLowerCase();return k(x[0]).localeCompare(k(y[0]))});
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),1800)};
 const save=()=>{localStorage.lib=JSON.stringify(lib);renderLib()};
-function show(v){if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv'])$('#'+s).hidden=s!=v;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v==(v=='results'?'home':v)));$('.searchbar').hidden=v=='library'}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v));$('#clear').onclick=()=>show('home');
+function show(v){if(v!=='results')v='allv';if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv']){const e=$('#'+s);if(e)e.hidden=s!=v}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v));$('#clear').onclick=()=>{$('#q').value='';show('allv')};
 const JUNK=/\b(trailer|teaser|review|reviews|reaction|summary|summarized|summaries|in \d+ minutes|explained|book promo|promo|unboxing|music video|official (music )?video|lyrics?|#shorts?|shorts|live ?stream(ing)? (starting|soon)|premiere|coming soon|highlights?|clips?|preview|sample|excerpt|playlist only)\b/i;
 const playable=x=>x&&x.id&&x.duration&&secs(x.duration)>=300&&!JUNK.test(x.title||'');
 const minFor=q=>/coast to coast/i.test(q)?30:/\bgaia\b/i.test(q)?30:/podcast|\bjre\b|joe rogan|episode|interview/i.test(q)?30:/\bted(x)?\b|ted-ed/i.test(q)?5:/lecture|talks?\b|speech|sermon|seminar|course|keynote/i.test(q)?30:55;
@@ -79,7 +79,7 @@ async function yt(q,long){const m=long?(typeof long=='number'?long:minFor(q)):0;
 const secs=d=>d?d.split(':').reduce((a,x)=>a*60+ +x,0):0;
 function card(it,{book}={}){const id=++rid;reg[id]=it;const inLib=it.videoId&&lib.some(x=>x.videoId==it.videoId);
   return`<div class="card"><div class="cover" ${it.videoId?`onclick="playIt(${id})"`:`onclick="addBook(${id})"`}>${B}${KIND(it)}${it.duration?`<span class="dur">${esc(it.duration)}</span>`:''}${it.videoId?'':''}</div>
-  <div class="body"><div class="t">${esc(it.title)}</div>${it.sub?`<div class="sub">${esc(it.sub)}</div>`:''}<div class="s">${esc(it.author)}</div><div class="acts">${book?`<button class="add" onclick="addBook(${id})">+ Add</button>`:inLib?`<button disabled>✓ Saved</button>`:`<button class="add" onclick="addIt(${id},this)">+ Add</button>`}${it.videoId?`<button onclick="playIt(${id})">▶ Play</button>`:''}</div></div></div>`}
+  <div class="body"><div class="t">${esc(it.title)}</div>${it.sub?`<div class="sub">${esc(it.sub)}</div>`:''}<div class="s">${esc(it.author)}</div><div class="acts">${it.videoId?`<button onclick="playIt(${id})">▶ Play</button>`:''}</div></div></div>`}
 const NOISE=/\b(full[- ]length|full|complete|unabridged|abridged|audio ?books?|audio ?book|free|english|with text|subtitles?|high quality|hq|hd|narrated|read along|classic literature|collection|greatest)\b/gi;
 function cleanTitle(t){t=String(t||'').replace(/[\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]/gu,'').replace(/\s*[\[(][^\])]*[\])]/g,m=>/audio|full|part|book|unabridged|chapter|\d/i.test(m)?'':m)
   .replace(/\b(part|pt|book|vol(ume)?|chapter|ch)\.?\s*\d+(\s*(of|\/)\s*\d+)?\b/gi,'').replace(NOISE,'').replace(/\s*[|#].*$/,'')
@@ -109,7 +109,7 @@ function azBar(bar,root){bar.innerHTML=LETTERS.map(l=>`<button data-j="${l}">${l
 function addSorted(root,it){insSorted(lsec(root,L(it.title)),card(it),sk(it.title)+'|'+it.videoId)}
 // Discover
 const seen=new Set();let next=0;
-$('#catsel').insertAdjacentHTML('beforeend',CATS.map((c,i)=>`<option value="${i}">${esc(c[0])}</option>`).join(''));$('#catsel').onchange=e=>{const v=e.target.value;if(v!=='')goCat(+v)};
+
 async function loadCat(i){if(i>=CATS.length||$('#cat'+i))return;const [name,qs]=CATS[i];
   $('#rows').insertAdjacentHTML('beforeend',`<section id="cat${i}"><h2>${esc(name)}</h2><div class="shelf">${'<div class="skel"></div>'.repeat(5)}</div></section>`);
   const shelf=$(`#cat${i} .shelf`),toks=[];
@@ -135,8 +135,8 @@ async function aStep(){if(aBusy)return;aBusy=true;$('#aload').textContent='Findi
       else if(aIdx<AQ.length){const q=AQ[aIdx++];p=await ytPage(q,true).catch(()=>null);if(p&&p.next)aCont.push({t:p.next,d:1,m:minFor(q)})}else if(aCont.length)continue;else break;
       if(!p)continue;p.items.filter(x=>!aSeen.has(x.id)&&aSeen.add(x.id)).map(vid).forEach(it=>{try{addSorted($('#all'),it);n++}catch(e){}});updCount()}
     }finally{updCount();aBusy=false;$('#aload').textContent=aIdx>=AQ.length&&!aCont.length?'That\'s everything for now. Enjoy!':'Keep exploring'}}
-new IntersectionObserver(e=>{if(e[0].isIntersecting&&!$('#allv').hidden)aStep()},{rootMargin:'1200px'}).observe($('#aload'));
-$('#aload').onclick=aStep;azBar($('#aaz'),$('#all'));azBar($('#laz'),$('#lib'));
+
+$('#aload').onclick=aStep;
 // Search
 let books=[];
 $('#f').onsubmit=async e=>{e.preventDefault();const q=$('#q').value.trim();if(!q)return show('home');show('results');
@@ -169,7 +169,7 @@ $('#speed').onchange=()=>player?.setPlaybackRate(+$('#speed').value);
 
 $('#close').onclick=()=>{document.querySelectorAll('.card.playing').forEach(c=>c.classList.remove('playing'));tileEl=null;persist();player?.stopVideo();$('#player').hidden=true;renderLib()};
 function persist(){if(cur&&player?.getCurrentTime){const t=player.getCurrentTime();if(t>0){pos[cur.videoId]=t;localStorage.pos=JSON.stringify(pos)}$('#ptime').textContent=fmt(t)+(player.getDuration?' / '+fmt(player.getDuration()):'')}}
-setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();loadMore(6);
+setInterval(persist,5000);addEventListener('pagehide',persist);renderLib();show('allv');
 
 // Single bottom player; tiles only highlight
 let tileEl=null;

@@ -5,12 +5,12 @@
 <header class="top"><div class="brand"><img class="mark" src="/logo.svg" alt="Wisdom logo"><h1 class="wordmark">Wisdom<br>Audio</h1></div>
 </header>
 <div class="layout">
-<main><div class="topctl"><nav class="tabs" aria-label="Sections"><button data-v="home" class="tab on">Discover</button><button data-v="allv" class="tab">All</button><button data-v="library" class="tab">Library</button></nav><label class="catsel"><span class="sr">Categories</span><select id="catsel" aria-label="Categories"><option value="">Categories…</option></select></label></div>
+<main>
 <form id="f" class="searchbar"><input id="q" type="search" placeholder="Search audiobooks, lectures, talks or podcasts…" autocomplete="off"><button>Search</button></form>
 <section id="home"><div id="rows"></div><button id="more" class="loadmore">Show me more categories</button></section>
-<section id="results" hidden><div class="rowhead"><h2>Listen now</h2><button class="link" id="clear">← Back to Discover</button></div><div class="rowhead"><span id="ytcount" class="s"></span></div><div id="yt" class="shelf wrap"></div><button id="ytmore" class="loadmore" hidden>Show me more</button></section>
-<section id="allv" hidden><div class="rowhead"><h2>All Audiobooks</h2><span id="acount" class="s">0 audiobooks loaded</span></div><div id="aaz" class="az"></div><div id="all"></div><button id="aload" class="loadmore">Keep exploring</button></section>
-<section id="library" hidden><h2>Your library</h2><div id="laz" class="az"></div><div id="lib"></div></section>
+<section id="results" hidden><div class="rowhead"><h2>Listen now</h2><button class="link" id="clear">← Back to all audio</button></div><div class="rowhead"><span id="ytcount" class="s"></span></div><div id="yt" class="shelf wrap"></div><button id="ytmore" class="loadmore" hidden>Show me more</button></section>
+<section id="allv" hidden><div class="rowhead"><h2>All audio, A to Z</h2><span id="acount" class="s">0 audiobooks loaded</span></div><div id="all"></div><button id="aload" class="loadmore">Keep exploring</button></section>
+<section id="library" hidden><h2>Your library</h2><div id="lib"></div></section>
 </main></div>
 <footer class="sitefoot"><span class="donate-wrap"><small class="donate-cap">Apple Pay</small><a class="pill-btn solid" id="donateBtn2" href="sms:3074090646&amp;body=Donations%20%2A%20Comments%20%2A%20Requests" title="Buy me a coffee: opens Messages for donations, comments or requests"><span class="coffee-ico" aria-hidden="true">☕</span><span class="lbl">Buy me a coffee</span></a></span></footer>
 <div id="player" hidden><div class="pbar"><img class="pmark" src="/logo.svg" alt="Wisdom"><div class="pmeta"><b id="ptitle"></b><span id="psub" class="psub" hidden></span><span id="pauthor" class="s"></span><span id="ptime" class="s"></span></div>
