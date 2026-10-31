@@ -66,7 +66,7 @@ CATS.sort((x,y)=>{const k=s=>s.replace(/^[^A-Za-z0-9]+/,'').replace(/^the\s+/i,'
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),1800)};
 const save=()=>{localStorage.lib=JSON.stringify(lib);renderLib()};
 function show(v){if(v=='allv'&&!aStarted){aStarted=true;aStep()}for(const s of['home','results','library','allv'])$('#'+s).hidden=s!=v;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v==(v=='results'?'home':v)));$('.searchbar').hidden=v=='library'}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v));$('#clear').onclick=()=>show('home');
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(b.dataset.v=='library'&&!$('#library').hidden?'home':b.dataset.v));$('#clear').onclick=()=>show('home');
 const JUNK=/\b(trailer|teaser|review|reviews|reaction|summary|summarized|summaries|in \d+ minutes|explained|book promo|promo|unboxing|music video|official (music )?video|lyrics?|#shorts?|shorts|live ?stream(ing)? (starting|soon)|premiere|coming soon|highlights?|clips?|preview|sample|excerpt|playlist only)\b/i;
 const playable=x=>x&&x.id&&x.duration&&secs(x.duration)>=300&&!JUNK.test(x.title||'');
 const minFor=q=>/coast to coast/i.test(q)?30:/\bgaia\b/i.test(q)?30:/podcast|\bjre\b|joe rogan|episode|interview/i.test(q)?30:/\bted(x)?\b|ted-ed/i.test(q)?5:/lecture|talks?\b|speech|sermon|seminar|course|keynote/i.test(q)?30:55;
