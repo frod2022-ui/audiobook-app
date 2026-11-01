@@ -200,3 +200,4 @@ main{flex:1;min-width:0}
 .mark{box-shadow:0 0 14px rgba(212,175,55,.35),var(--sh)}
 @media (max-width:430px){.wordmark{font-size:18px;letter-spacing:.8px}}
 html,body{min-height:100dvh}body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:calc(120px + env(safe-area-inset-bottom))}.top{padding-top:max(14px,env(safe-area-inset-top))}
+.k-radio{background:#2e2414;color:#ffd9a0;border-color:#7a5a2a}
