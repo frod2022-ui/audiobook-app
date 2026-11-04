@@ -189,13 +189,7 @@ main{flex:1;min-width:0}
 .pmsg{padding:6px 12px;font-size:13px;color:#f5d76e;background:#1c1a14;border-top:1px solid #3a3222}
 
 .toptabs{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
-.top .donate-wrap{margin-left:auto;display:flex;flex-direction:column;align-items:center;gap:2px;flex:none}
-.donate-cap{font-size:10.5px;line-height:1;color:#a8a8a8;font-weight:600;white-space:nowrap}
-#donateBtn2{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 18px;border-radius:999px;background:#ffdd00;color:#111;border:1px solid #c9ad00;box-shadow:0 1px 4px rgba(0,0,0,.15);font-weight:700;font-size:16px;text-decoration:none;white-space:nowrap}
-#donateBtn2 .coffee-ico{font-size:17px;line-height:1}
-@media (max-width:430px){#donateBtn2{height:40px;padding:0 12px;font-size:13px}}
 .layout{display:block}
-#donateBtn2,#donateBtn2 .lbl{font-size:14px}#donateBtn2{height:38px;padding:0 14px;gap:6px;border-radius:999px;font-weight:700;background:#8b4513;color:#fff;border:1px solid #5c2e0a;box-shadow:0 1px 4px rgba(0,0,0,.25)}#donateBtn2 .coffee-ico{font-size:14px}
 .wordmark{font-family:Didot,"Bodoni 72","Bodoni MT","Playfair Display","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif!important;font-weight:700;font-size:21px;letter-spacing:1.2px;line-height:1.02;background:linear-gradient(180deg,#fff3c4 0%,#f5d76e 38%,#d4af37 62%,#9c7a22 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 6px rgba(245,215,110,.35)) drop-shadow(0 1px 0 rgba(0,0,0,.6))}
 .mark{box-shadow:0 0 14px rgba(212,175,55,.35),var(--sh)}
 @media (max-width:430px){.wordmark{font-size:18px;letter-spacing:.8px}}
@@ -204,4 +198,4 @@ html,body{min-height:100dvh}body{padding-left:env(safe-area-inset-left);padding-
 .top{position:sticky;justify-content:flex-end}
 .top .brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 h2{text-align:center}
-@media (max-width:560px){.top{flex-wrap:wrap;justify-content:flex-end;row-gap:6px}.top .brand{position:static;transform:none;order:2;flex:0 0 100%;justify-content:center}.top .donate-wrap{order:1}.az{top:123px}}
+@media (max-width:560px){.top{justify-content:center}.top .brand{position:static;transform:none}}
