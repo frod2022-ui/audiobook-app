@@ -199,3 +199,4 @@ html,body{min-height:100dvh}body{padding-left:env(safe-area-inset-left);padding-
 .top .brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 h2{text-align:center}
 @media (max-width:560px){.top{justify-content:center}.top .brand{position:static;transform:none}}
+.top{justify-content:center}.top .brand{position:static;transform:none}
